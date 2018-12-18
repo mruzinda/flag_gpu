@@ -213,12 +213,12 @@ for xid = 1:Nxengines
     if xid == 2
         remoteHost = '10.17.16.201'; % It was 208 before
     end
-    if xid == 3
-        remoteHost = '10.17.16.202'; % It was 208 before
-    end
-    if xid == 4
-        remoteHost = '10.17.16.203'; % It was 208 before
-    end
+%     if xid == 3
+%         remoteHost = '10.17.16.202'; % It was 208 before
+%     end
+%     if xid == 4
+%         remoteHost = '10.17.16.203'; % It was 208 before
+%     end
 %     if xid == 12
 %         remoteHost = '10.17.16.211'; % It was 208 before
 %     end
@@ -237,7 +237,7 @@ mcnt = 0; % Each mcnt represents 20 packets across all F-engines in the
   
 for mcnt = [0:801,1200,1600,2000,2400] % [0:801,1200,1600,2000,2400] [0:401,600,800,1000,1200]  % No scalloping fix %while mcnt <= 10000
     disp(['Sending mcnt = ', num2str(mcnt)]);
-    for xid = [1:4] % Set to a single X-engine for single HPC testing (Richard B.)
+    for xid = [1:2] % Set to a single X-engine for single HPC testing (Richard B.)
         for fid = 1:Nfengines
             w_idx = 1;
             

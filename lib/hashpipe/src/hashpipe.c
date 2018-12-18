@@ -51,7 +51,7 @@ static void cc(int sig)
 }
 
 /* Exit handler that updates status buffer */
-inline void set_exit_status(hashpipe_thread_args_t *args) {
+static inline void set_exit_status(hashpipe_thread_args_t *args) {
     if(args && args->st.buf && args->thread_desc->skey) {
         hashpipe_status_lock_safe(&args->st);
         hputs(args->st.buf, args->thread_desc->skey, "exit");

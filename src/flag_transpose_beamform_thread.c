@@ -67,14 +67,14 @@ static void * run(hashpipe_thread_args_t * args) {
     char cal_filename[65];
     char algorithm[65];
     char weight_filename[65];
-    long long unsigned int bf_xid;
+    //long long unsigned int bf_xid = 0;
     int act_xid;
 
     bf_get_offsets(offsets);
     bf_get_cal_filename(cal_filename);
     bf_get_algorithm(algorithm);
     bf_get_weight_filename(weight_filename);
-    bf_xid = bf_get_xid();
+    long long unsigned int bf_xid = bf_get_xid();
 
     int i;
     hashpipe_status_lock_safe(&st);
@@ -140,7 +140,7 @@ static void * run(hashpipe_thread_args_t * args) {
                         char cal_filename[65];
                         char algorithm[65];
                         char weight_filename[65];
-                        long long unsigned int bf_xid;
+                        //long long unsigned int bf_xid = 0;
                         int act_xid;
 
                         printf("RTBF: setting offsets...\n");
@@ -151,7 +151,7 @@ static void * run(hashpipe_thread_args_t * args) {
                         bf_get_algorithm(algorithm);
                         bf_get_weight_filename(weight_filename);
                         printf("RTBF: getting weight filename...\n");
-                        bf_xid = bf_get_xid();
+                        long long unsigned int bf_xid = bf_get_xid();
                      
                         int i;
                         printf("RTBF: updating Az/El Offset metadata...\n");

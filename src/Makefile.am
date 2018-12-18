@@ -12,7 +12,8 @@ AM_CPPFLAGS += -I"@XGPU_PFB_INCDIR@"
 AM_CPPFLAGS += "@CUDA_INCDIR@"
 
 # AM_CFLAGS is used for all C compiles
-AM_CFLAGS = -fPIC -O3 -Wall -Werror -fno-strict-aliasing -mavx
+AM_CFLAGS = -fPIC -O3 -Wall -fno-strict-aliasing -mavx
+#AM_CFLAGS = -fPIC -O3 -Wall -Werror -fno-strict-aliasing -mavx
 # AM_CFLAGS = -ggdb -fPIC -O3 -Wall -Werror -fno-strict-aliasing
 
 # Convenience variables to group source files

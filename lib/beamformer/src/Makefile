@@ -13,14 +13,20 @@ endif
 
 NVCC = $(CUDA_DIR)/bin/nvcc
 
+LINKER = -Xlinker -export-dynamic
+
 all: libflagbeamformer.so cublas_main.o
-	gcc -L $(CUDA_LIBDIR) -lstdc++ -lcudart -lcublas -o cublas_main libflagbeamformer.so cublas_main.o
+	#gcc -L $(CUDA_LIBDIR) -lstdc++ -lcudart -lcublas -o cublas_main libflagbeamformer.so cublas_main.o
+	gcc -L$(CUDA_LIBDIR) -o cublas_main cublas_main.o libflagbeamformer.so -lstdc++ -lcudart -lcublas
+
+libflagbeamformer.so: cublas_beamformer.o
+	$(NVCC) -Xcompiler -fPIC -Xcompiler -D_REENTRANT -O3 cublas_beamformer.o -o libflagbeamformer.so -L$(CUDA_LIBDIR) $(LINKER) --shared
 
 cublas_beamformer.o: cublas_beamformer.cu cublas_beamformer.h
 	$(NVCC) -c -o cublas_beamformer.o -Xcompiler -fPIC -Xcompiler -D_REENTRANT -O3 cublas_beamformer.cu
 
-libflagbeamformer.so: cublas_beamformer.o
-	$(NVCC) -Xcompiler -fPIC -Xcompiler -D_REENTRANT -O3 cublas_beamformer.o -o libflagbeamformer.so -L$(CUDA_LIBDIR) --shared
+#libflagbeamformer.so: cublas_beamformer.o
+#	$(NVCC) -Xcompiler -fPIC -Xcompiler -D_REENTRANT -O3 cublas_beamformer.o -o libflagbeamformer.so -L$(CUDA_LIBDIR) $(LINKER) --shared
 
 cublas_main.o: cublas_main.cu cublas_beamformer.h
 	$(NVCC) -I $(CUDA_DIR)/include -c -o cublas_main.o cublas_main.cu

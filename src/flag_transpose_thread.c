@@ -47,7 +47,7 @@ static void * run(hashpipe_thread_args_t * args) {
     int rv;
     int curblock_in = 0;
     int curblock_out = 0;
-    uint64_t mcnt;
+    uint64_t mcnt = 0;
     state cur_state = ACQUIRE;
     state next_state = ACQUIRE;
     int traclean = -1;

@@ -23,8 +23,8 @@
 #endif
 
 #ifndef NTIME_PIPE
-//#define NTIME_PIPE 40
-#define NTIME_PIPE 80
+#define NTIME_PIPE 40
+//#define NTIME_PIPE 80
 #endif
 
 // Ensure that NTIME_PIPE is a multiple of 4
