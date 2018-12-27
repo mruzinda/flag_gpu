@@ -3,8 +3,8 @@
 CPU/GPU codes for real-time beamforming and correlations for the Office of Naval Research (ONR) phased-array feed. To be used with the hashpipe thread management system.
 
 Filesystem Layout
-onr_gpu/src            -> Source code for the various threads used in the FLAG digital processor
-onr_gpu/lib            -> Source codes for the various libraries used by the FLAG threads
+onr_gpu/src            -> Source code for the various threads used in the ONR digital processor
+onr_gpu/lib            -> Source codes for the various libraries used by the ONR threads
 onr_gpu/lib/hashpipe   -> Source code for the hashpipe system
 onr_gpu/lib/xGPU       -> Source code for the GPU-enabled correlator
 onr_gpu/lib/flagPower  -> Source code for the GPU-enabled total power calculator
