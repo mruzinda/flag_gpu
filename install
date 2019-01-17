@@ -3,14 +3,15 @@
 # Change this to match your root directory of the flag_gpu repo
 if [ $# -eq 0 ] # No arguments provided
 then
-    FLAG_DIR=$PWD
+    ONR_DIR=$PWD
 else
-    FLAG_DIR=$1
+    ONR_DIR=$1
 fi
 
 # Change this to match your destination directory
 #prefix=/home/mruzinda/hash/
-prefix=/usr/local/
+#prefix=/usr/local/
+prefix=/opt/local/hash
 
 # Add prefix to PATH
 if [[ "$PATH" == ?(*:)"$prefix/bin"?(:*) ]]
@@ -33,18 +34,18 @@ fi
 # Check for CUDA
 if [ -z "$CUDA" ]
 then
-    echo "CUDA is not set-- using $prefix/cuda"
-    CUDA=$prefix/cuda
+    echo "CUDA is not set-- using /usr/local/cuda"
+    CUDA=/opt/local/NVIDIA/cuda-10.0
 else
     echo "CUDA is set to $CUDA"
 fi
 
 # Set library source directories
-HASHPIPE_SRC=$FLAG_DIR/lib/hashpipe/src
-XGPU_SRC=$FLAG_DIR/lib/xGPU/src
-BEAM_SRC=$FLAG_DIR/lib/beamformer/src
-PFB_SRC=$FLAG_DIR/lib/pfb/src
-POWER_SRC=$FLAG_DIR/lib/flagPower/src
+HASHPIPE_SRC=$ONR_DIR/lib/hashpipe/src
+XGPU_SRC=$ONR_DIR/lib/xGPU/src
+BEAM_SRC=$ONR_DIR/lib/beamformer/src
+PFB_SRC=$ONR_DIR/lib/pfb/src
+POWER_SRC=$ONR_DIR/lib/flagPower/src
 
 # Compile the hashpipe library
 echo "Installing HASHPIPE"
@@ -106,8 +107,8 @@ echo
 # Compile the flag HASHPIPE plugins
 echo "Installing the FLAG plugins"
 echo "========================================"
-echo "Navigating to $FLAG_DIR/src"
-cd $FLAG_DIR/src
+echo "Navigating to $ONR_DIR/src"
+cd $ONR_DIR/src
 autoreconf -is
 ./configure --prefix=$prefix --with-hashpipe=$prefix --with-xgpu=$prefix --with-xgpufrb=$prefix --with-xgpupfb=$prefix --with-flagpfb=$prefix --with-flagbeamformer=$prefix --with-flagpower=$prefix
 make clean
@@ -116,7 +117,7 @@ make install
 echo "========================================"
 echo 
 
-cd $FLAG_DIR
+cd $ONR_DIR
 
 echo "DONE!"
-echo "The FLAG plugins have been installed to $prefix"
+echo "The ONR plugins have been installed to $prefix"

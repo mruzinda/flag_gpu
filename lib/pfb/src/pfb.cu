@@ -73,7 +73,7 @@ int runPFB(signed char* inputData_h, float* outputData_h, params pfbParams) {
 	if(pfb_on) {
 		//PFB
 		PFB_kernel<<<g_dimGPFB, g_dimBPFB>>>(g_pc2DataRead_d, g_pf2FFTIn_d, g_pfPFBCoeff_d, pfbParams);
-		CUDASafeCallWithCleanUp(cudaThreadSynchronize());
+		CUDASafeCallWithCleanUp(cudaDeviceSynchronize());
 
 	} else {
 		// Prepare for FFT

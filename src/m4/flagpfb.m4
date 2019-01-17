@@ -3,12 +3,12 @@ AC_DEFUN([AX_CHECK_FLAGPFB],
 [AC_PREREQ([2.63])dnl
 AC_ARG_WITH([flagpfb],
             AC_HELP_STRING([--with-flagpfb=DIR],
-                           [Location of flagpfb headers/libs (/usr/local)]),
+                           [Location of flagpfb headers/libs (/opt/local)]),
             [FLAGPFBDIR="$withval"],
-            [FLAGPFBDIR=/usr/local])
+            [FLAGPFBDIR=/opt/local])
 
 orig_LDFLAGS="${LDFLAGS}"
-LDFLAGS="${orig_LDFLAGS} -L${FLAGPFBDIR}/lib -L/usr/local/cuda/lib64"
+LDFLAGS="${orig_LDFLAGS} -L${FLAGPFBDIR}/lib -L/opt/local/NVIDIA/cuda-10.0/lib64"
 AC_CHECK_LIB([flagpfb],[runPFB],
 dnl              # Found
              AC_SUBST(FLAGPFB_LIBDIR,${FLAGPFBDIR}/lib),

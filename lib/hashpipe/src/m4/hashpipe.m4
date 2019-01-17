@@ -3,9 +3,9 @@ AC_DEFUN([AX_CHECK_HASHPIPE],
 [AC_PREREQ([2.63])dnl
 AC_ARG_WITH([hashpipe],
             AC_HELP_STRING([--with-hashpipe=DIR],
-                           [Location of HASHPIPE files (/usr/local)]),
+                           [Location of HASHPIPE files (/opt/local)]),
             [HASHPIPEDIR="$withval"],
-            [HASHPIPEDIR=/usr/local])
+            [HASHPIPEDIR=/opt/local])
 
 orig_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${orig_LDFLAGS} -L${HASHPIPEDIR}/lib"

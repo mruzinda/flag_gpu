@@ -2,7 +2,7 @@
 # (usually sizing for a specific project)
 -include Makefile.local
 
-CUDA_DIR ?= /usr/local/cuda
+CUDA_DIR ?= /opt/local/NVIDIA/cuda-10.0
 ifneq ($(strip $(OSTYPE)),osx)
 CUDA_LIBDIR ?= $(CUDA_DIR)/lib64
 else
@@ -14,7 +14,7 @@ TEXTURE_DIM ?= 1
 CUDA_ARCH ?= sm_20
 
 NVCC = $(CUDA_DIR)/bin/nvcc
-prefix ?= /usr/local
+prefix ?= /opt/local
 bindir ?= $(prefix)/bin
 libdir ?= $(prefix)/lib
 includedir ?= $(prefix)/include

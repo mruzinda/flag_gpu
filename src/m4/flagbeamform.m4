@@ -3,12 +3,12 @@ AC_DEFUN([AX_CHECK_FLAGBEAMFORM],
 [AC_PREREQ([2.63])dnl
 AC_ARG_WITH([flagbeamformer],
             AC_HELP_STRING([--with-flagbeamformer=DIR],
-                           [Location of flagbeamformer headers/libs (/usr/local)]),
+                           [Location of flagbeamformer headers/libs (/opt/local)]),
             [FLAGBEAMDIR="$withval"],
-            [FLAGBEAMDIR=/usr/local])
+            [FLAGBEAMDIR=/opt/local])
 
 orig_LDFLAGS="${LDFLAGS}"
-LDFLAGS="${orig_LDFLAGS} -L${FLAGBEAMDIR}/lib -L/usr/local/cuda/lib64"
+LDFLAGS="${orig_LDFLAGS} -L${FLAGBEAMDIR}/lib -L/opt/local/NVIDIA/cuda-10.0/lib64"
 AC_CHECK_LIB([flagbeamformer], [update_weights],
 dnl              # Found
              AC_SUBST(FLAGBEAM_LIBDIR,${FLAGBEAMDIR}/lib),

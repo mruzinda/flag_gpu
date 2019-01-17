@@ -3,9 +3,9 @@ AC_DEFUN([AX_CHECK_XGPU_FRB],
 [AC_PREREQ([2.65])dnl
 AC_ARG_WITH([xgpufrb],
             AC_HELP_STRING([--with-xgpufrb=DIR],
-                           [Location of xGPU_frb headers/libs (/usr/local)]),
+                           [Location of xGPU_frb headers/libs (/opt/local)]),
             [XGPU_FRB_DIR="$withval"],
-            [XGPU_FRB_DIR=/usr/local])
+            [XGPU_FRB_DIR=/opt/local])
 
 orig_LDFLAGS="${LDFLAGS}"
 LDFLAGS="${orig_LDFLAGS} -L${XGPU_FRB_DIR}/lib"

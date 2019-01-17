@@ -1,10 +1,10 @@
 -include Makefile.local
 
-prefix ?= /usr/local
+prefix ?= /opt/local
 libdir ?= $(prefix)/lib
 includedir ?= $(prefix)/include
 bindir ?= $(prefix)/bin
-CUDA_DIR ?= $(prefix)/cuda
+CUDA_DIR ?= $(prefix)/NVIDIA/cuda-10.0
 ifneq ($(strip $(OSTYPE)),osx)
 CUDA_LIBDIR ?= $(CUDA_DIR)/lib64
 else

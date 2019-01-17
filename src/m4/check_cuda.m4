@@ -3,12 +3,12 @@ AC_DEFUN([AX_CHECK_CUDA], [
 # provide CUDA path
 AC_ARG_WITH(cuda,
 			[--with-cuda=PREFIX  Prefix of your CUDA installation],
-			[cuda_prefix=$withval], [cuda_prefix="/usr/local/cuda"])
+			[cuda_prefix=$withval], [cuda_prefix="/opt/local/NVIDIA/cuda-10.0"])
 
 # Set prefix to default if only the --with-cuda was passed
 if test "$cuda_prefix" == "yes"; then
 	if test "$withval" == "yes"; then
-		cuda_prefix="/usr/local/cuda"
+		cuda_prefix="/opt/local/NVIDIA/cuda-10.0"
 	fi
 fi
 

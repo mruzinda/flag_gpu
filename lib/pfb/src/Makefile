@@ -1,14 +1,14 @@
 -include Makefile.local
 
-prefix ?= /usr/local
+prefix ?= /opt/local
 libdir ?= $(prefix)/lib
 includedir ?= $(prefix)/include
 bindir ?= $(prefix)/bin
-CUDA_DIR ?= $(prefix)/cuda
+CUDA_DIR ?= $(prefix)/NVIDIA/cuda-10.0
 
 datdir ?= $(prefix)/data
 
-#CUDA_DIR ?= /usr/local/cuda
+#CUDA_DIR ?= /opt/local/cuda
 #prefix ?= tmp
 #libdir ?= $(prefix)/lib
 #includedir ?= $(prefix)/include
@@ -20,7 +20,8 @@ CUDA_LIBDIR = -L$(CUDA_DIR)/lib
 #INCLUDES = -I/Developer/NVIDIA/CUDA-6.5/include
 #CUDA_LIBDIR = -L/Developer/NVIDIA/CUDA-6.5/lib
 
-CLIBDIR = -L/usr/local/lib
+#CLIBDIR = -L/opt/local/lib
+CLIBDIR = -L/opt/local/hash/lib
 CU_LIB  = -lcufft -lcudart
 C_LIB = -ldl -lutil
 
@@ -34,10 +35,10 @@ endif
 
 NVCC = $(CUDA_DIR)/bin/nvcc
 
-all: libflagpfb.so
+all: libflagpfb.so pfb.o kernels.o
 
 libflagpfb.so: pfb.o kernels.o
-	$(NVCC) $(INCLUDS) -Xcompiler -fPIC -Xcompiler -D_REENTRANT -O3 pfb.o kernels.o -o libflagpfb.so $(CUDA_LIBDIR) $(CU_LIB) $(CLIBDIR) $(C_LIB) $(LINKER) --shared
+	$(NVCC) $(INCLUDES) -Xcompiler -fPIC -Xcompiler -D_REENTRANT -O3 pfb.o kernels.o -o libflagpfb.so $(CUDA_LIBDIR) $(CU_LIB) $(CLIBDIR) $(C_LIB) $(LINKER) --shared
 
 pfb.o: kernels.cu kernels.h
 	$(NVCC) $(INCLUDES) $(CUDA_LIBDIR) $(CU_LIB) -c -o pfb.o -Xcompiler -fPIC -Xcompiler -D_REENTRANT -O3 pfb.cu
