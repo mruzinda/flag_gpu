@@ -73,6 +73,9 @@ static void * run(hashpipe_thread_args_t * args) {
         char filename[256];
         //sprintf(filename, "%s/TGBT16A_508_01/TMP/BF/beamformer_%s_mcnt_%lld.out", data_dir, BANK, (long long)start_mcnt);
         //fprintf(stderr, "Saving to %s\n", filename);
+        sprintf(filename, "/dev/null");
+        fprintf(stderr, "Saving to %s\n", filename);
+
         printf("RTBF: mcnt: %lld\n", (long long)start_mcnt);
         if (SAVE) {
             float * p = (float *)db_in->block[curblock_in].data;

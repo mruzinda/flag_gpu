@@ -57,8 +57,10 @@ cmd_t check_cmd(int fifo_fd)
 	struct pollfd pfd[1];
         //pfd[1].fd = fifo_fd;
         //pfd[1].events = POLLIN;
-        pfd[0].fd = fileno(stdin);
+        pfd[0].fd = fifo_fd;
         pfd[0].events = POLLIN;
+        //pfd[0].fd = fileno(stdin);
+        //pfd[0].events = POLLIN;
 		// ?, num file desc, timeout
         int rv = poll(pfd, 1, 0);
         if (rv==0)
@@ -87,7 +89,7 @@ cmd_t check_cmd(int fifo_fd)
             {
                 if (read(pfd[i].fd, cmd, MAX_CMD_LEN-1)<1)
 				{
-// 					fprintf(stderr, "read failed :(\n");
+// 					fprintf(stderr, "read failed :( : %c \n", cmd);
 // 					perror("read");
 //                     return INVALID;
 				}
@@ -101,7 +103,7 @@ cmd_t check_cmd(int fifo_fd)
         }
 
         if (pfd[0].revents==POLLHUP) {
-			//fprintf(stderr, "POLLHUP :(\n");
+//			fprintf(stderr, "POLLHUP :(\n");
         }
 
 		if (rv==0)

@@ -227,7 +227,7 @@ static void set_block_filled(flag_input_databuf_t * db, block_info_t * binfo) {
     // Mark block as good if all packets are there
     if (binfo->packet_count[block_idx] == N_REAL_PACKETS_PER_BLOCK) {
         db->block[block_idx].header.good_data = 1;
-        // printf("NET: Good Block! mcnt = %lld\n", (long long int)db->block[block_idx].header.mcnt_start);
+        printf("NET: Good Block! mcnt = %lld\n", (long long int)db->block[block_idx].header.mcnt_start);
     }
     else {
         printf("NET: Bad Block! mcnt = %lld, %d/%d\n", (long long int)db->block[block_idx].header.mcnt_start, binfo->packet_count[block_idx], N_REAL_PACKETS_PER_BLOCK);
@@ -542,8 +542,9 @@ static void *run(hashpipe_thread_args_t * args) {
     // Set up FIFO controls
     int cmd = INVALID;
     int master_cmd = INVALID;
-    int gpu_fifo_id = open_fifo("/tmp/bogus.fifo");
+    int gpu_fifo_id = open_fifo("/tmp/command.fifo");
     state cur_state = IDLE;
+    //state cur_state = ACQUIRE;
     state next_state = IDLE;
 
     /* Main loop */
@@ -571,6 +572,7 @@ static void *run(hashpipe_thread_args_t * args) {
         // Get command from Dealer/Player
         if (n++ >= n_loop) {
             master_cmd = check_cmd(gpu_fifo_id);
+            //fprintf(stderr, "NET: 574 MASTER CMD = %d\n", master_cmd);
             if(master_cmd != INVALID){
                 hashpipe_status_lock_safe(&st);
                 if (master_cmd == START) hputs(st.buf, "MASTRCMD", "START");
@@ -594,7 +596,8 @@ static void *run(hashpipe_thread_args_t * args) {
          ************************************************************/
         // If in IDLE state, look for START command
         if (cur_state == IDLE) {
-            // cmd = check_cmd(gpu_fifo_id);
+            master_cmd = check_cmd(gpu_fifo_id);
+            //fprintf(stderr, "NET: 599 MASTER CMD = %d\n", master_cmd);
 
             bh.packet_size = recv(up.sock, bh.data, HASHPIPE_MAX_PACKET_SIZE, 0);
             if(bh.packet_size != -1) {
@@ -624,6 +627,7 @@ static void *run(hashpipe_thread_args_t * args) {
         // If in ACQUIRE state, get packets
         if (cur_state == ACQUIRE) {
             // Loop over (non-blocking) packet receive
+            //fprintf(stderr, "NET: 629 MASTER CMD = %d\n", master_cmd);
             do {
                 if (master_cmd == STOP) break;
 
@@ -772,6 +776,7 @@ static void *run(hashpipe_thread_args_t * args) {
         }
 
         // Update state variable if needed
+        //next_state = ACQUIRE;
         if (next_state != cur_state) {
             hashpipe_status_lock_safe(&st);
             switch (next_state) {

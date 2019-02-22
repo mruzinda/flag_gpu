@@ -34,10 +34,12 @@ static void * run(hashpipe_thread_args_t * args) {
     int rv;
     int curblock_in = 0;
     while (run_threads()) {
-        
+        printf("SAV: In save thread !!\n"); 
         // Wait for input buffer block to be filled
         while ((rv=flag_gpu_correlator_output_databuf_wait_filled(db_in, curblock_in)) != HASHPIPE_OK) {
+            //printf("SAV: In save thread (2nd while loop)!!\n"); 
             if (rv==HASHPIPE_TIMEOUT) {
+                //printf("SAV: In save thread (If statement)!!\n"); 
                 hashpipe_status_lock_safe(&st);
                 hputs(st.buf, status_key, "waiting for free block");
                 hashpipe_status_unlock_safe(&st);
@@ -47,6 +49,7 @@ static void * run(hashpipe_thread_args_t * args) {
                 pthread_exit(NULL);
                 break;
             }
+            //printf("SAV: In save thread (Out of if statement)!!\n"); 
         }
 
         char directory[128];
@@ -61,7 +64,9 @@ static void * run(hashpipe_thread_args_t * args) {
         uint64_t start_mcnt = db_in->block[curblock_in].header.mcnt;
         //int64_t good_data = db_in->block[curblock_in].header.good_data;
         char filename[256];
-        sprintf(filename, "%s/TGBT16A_508_01/TMP/BF/cor_mcnt_%lld_%s.out", directory, (long long)start_mcnt, BANK);
+        //sprintf(filename, "%s/TGBT16A_508_01/TMP/BF/cor_mcnt_%lld_%s.out", directory, (long long)start_mcnt, BANK);
+        //fprintf(stderr, "SAV: Saving to %s\n", filename);
+        sprintf(filename, "/dev/null");
         fprintf(stderr, "SAV: Saving to %s\n", filename);
         
         #if SAVE == 1

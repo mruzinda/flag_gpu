@@ -39,7 +39,7 @@ sigma2 = kb*Tsys*BW;    % Noise power per channel
 % 8 -> Send exponentially correlated noise.
 % 9 -> Send pulsar data
 % else -> Send all zeros
-data_flag = 8;
+data_flag = 3;
 
 % Sinusoid parameters (only used if data_flag = 2)
 % It should be noted that the phase of the sinusoid will not change between
@@ -208,16 +208,16 @@ for xid = 1:Nxengines
 %     remoteHost = ['10.10.1.', num2str(xid)];
 
     if xid == 1
-        remoteHost = '10.17.16.200'; % It was 208 before
+        remoteHost = '10.17.16.1'; % It was 208 before
     end
     if xid == 2
-        remoteHost = '10.17.16.201'; % It was 208 before
+        remoteHost = '10.17.16.2'; % It was 208 before
     end
 %     if xid == 3
-%         remoteHost = '10.17.16.202'; % It was 208 before
+%         remoteHost = '10.17.16.3'; % It was 208 before
 %     end
 %     if xid == 4
-%         remoteHost = '10.17.16.203'; % It was 208 before
+%         remoteHost = '10.17.16.4'; % It was 208 before
 %     end
 %     if xid == 12
 %         remoteHost = '10.17.16.211'; % It was 208 before
@@ -237,7 +237,7 @@ mcnt = 0; % Each mcnt represents 20 packets across all F-engines in the
   
 for mcnt = [0:801,1200,1600,2000,2400] % [0:801,1200,1600,2000,2400] [0:401,600,800,1000,1200]  % No scalloping fix %while mcnt <= 10000
     disp(['Sending mcnt = ', num2str(mcnt)]);
-    for xid = [1:2] % Set to a single X-engine for single HPC testing (Richard B.)
+    for xid = [1:1] % Set to a single X-engine for single HPC testing (Richard B.)
         for fid = 1:Nfengines
             w_idx = 1;
             
