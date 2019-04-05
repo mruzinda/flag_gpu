@@ -19,10 +19,10 @@ clearvars;
 % R(1:2:end) = real(tmp(1,:));
 % R(2:2:end) = imag(tmp(1,:));
 
-Nele = 40;
+Nele = 24;
 Nele_tot = 64;
-Nbin = 25;
-Nsamp = 4000;
+Nbin = 8;
+Nsamp = 4250;
 Nbaselines_tot = (Nele_tot/2 + 1)*Nele_tot;
 Nbaselines     = (Nele + 1)*Nele/2;
 Nblocks        = (Nele_tot/2 + 1)*Nele_tot/4;
@@ -42,13 +42,13 @@ Rtot = zeros(Nele_tot, Nele_tot, Nbin);
 % % PFB correlator path %%%%%%%%%%%%%%%%%%%%%%%%
 % PATH = '/lustre/flag/';
 % Coarse correlator path %%%%%%%%%%%%%%%%%%%%%%%%
-PATH = '/lustre/flag/TGBT16A_508_01/TMP/BF/';
+PATH = '/home/tmp_output/';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mcnt = [0];%, 200, 400, 600];
 %for mcnt = 0:2:198
 for k = 1:length(mcnt)
     disp(['Processing mcnt=', num2str(mcnt(k))]);
-    FILE = fopen([PATH, sprintf('cor_mcnt_%d_B.out', mcnt(k))], 'r');
+    FILE = fopen([PATH, sprintf('cor_mcnt_%d_A.out', mcnt(k))], 'r');
     [R, count] = fscanf(FILE, '%g\n');
     fclose(FILE);
 
@@ -82,7 +82,7 @@ for k = 1:length(mcnt)
         if fig_mod_plot == 0
             fig_mod_plot = 40;
         end
-        subplot(8,5,fig_mod_plot);
+        subplot(2,4,fig_mod_plot);
         imagesc(abs(Rtot(1:Nele, 1:Nele, Nb)));
         title(['Bin ', num2str(Nb)]);
         drawnow;

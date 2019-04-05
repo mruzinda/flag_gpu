@@ -13,23 +13,31 @@
 #endif
 
 #ifndef NFREQUENCY
-#define NFREQUENCY 25
+#define NFREQUENCY 8
+//#define NFREQUENCY 25
 //#define NFREQUENCY 20
 #endif
 
 #ifndef NTIME
-#define NTIME 4000
+#define NTIME 4250
+//#define NTIME 4000
 //#define NTIME 8000
 #endif
 
 #ifndef NTIME_PIPE
-#define NTIME_PIPE 40
+#define NTIME_PIPE 50
+//#define NTIME_PIPE 40
 //#define NTIME_PIPE 80
 #endif
 
 // Ensure that NTIME_PIPE is a multiple of 4
-#if (NTIME_PIPE/4)*4 != NTIME_PIPE
-#error NTIME_PIPE must be a multiple of 4
+//#if (NTIME_PIPE/4)*4 != NTIME_PIPE
+//#error NTIME_PIPE must be a multiple of 4
+//#endif
+
+// Ensure that NTIME_PIPE is a multiple of 5
+#if (NTIME_PIPE/5)*5 != NTIME_PIPE
+#error NTIME_PIPE must be a multiple of 5
 #endif
 
 // Ensure that NTIME is a multiple of NTIME_PIPE

@@ -495,11 +495,11 @@ void run_beamformer(signed char * data_in, float * data_out) {
 	dim3 dimBlock_d(BN_ELE_BLOC, 1, 1);
 	dim3 dimGrid_d(BN_TIME, BN_BIN, 1);
 
-	int Nm = 200;
-	int Nf = 8;
-	int Nt = 20;
-	int Nc = 25;
-	int Ni = 8;
+	int Nm = 50; // 200;
+	int Nf = 8; // 8 because # of fengines * # of inputs = 8*8 = 64 (optimized for gpu).
+	int Nt = 85; // 20;
+	int Nc = 8; // 25;
+	int Ni = 8; // 8; because # of fengines * # of inputs = 8*8 = 64 (optimized for gpu)
 	dim3 gridDim_transpose(Nm, Nf, Nt);
 	dim3 blockDim_transpose(Ni, Nc, 1);
 

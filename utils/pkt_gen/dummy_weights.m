@@ -47,7 +47,7 @@ for b = 1:length(banks)
     
     % Get filename
 %     filename = '/lustre/projects/flag/weight_files/dummy_w.bin';
-    filename = '/home/groups/flag/weight_files/dummy_w.bin';
+    filename = '/home/weight_files/dummy_w.bin';
     weight_file = strrep(filename, '.', sprintf('_%s.', bank_name));
     
     % Create metadata for weight file

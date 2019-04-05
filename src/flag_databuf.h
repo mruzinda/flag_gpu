@@ -24,12 +24,12 @@
     #warning "N_INPUTS must match NA from total_power.h"
 #endif
 // xGPU needs a multiple of 32 inputs. The real number is...
-#define N_REAL_INPUTS 40
+#define N_REAL_INPUTS 24 // Should be 18, but needs to be divisible by 8 //40
 
 
 // Number of antennas per F engine
 // Determined by F engine DDL cards
-#define N_INPUTS_PER_FENGINE 8
+#define N_INPUTS_PER_FENGINE 8 //8
 #if N_INPUTS_PER_FENGINE!=NI
     #warning "N_INPUTS_PER_FENGINE must match NI from total_power.h"
 #endif
@@ -42,18 +42,18 @@
 #define N_REAL_FENGINES (N_REAL_INPUTS/N_INPUTS_PER_FENGINE)
 
 // Number of X engines
-#define N_XENGINES 20
+#define N_XENGINES 12 //20
 
 // Number of inputs per packet
 #define N_INPUTS_PER_PACKET N_INPUTS_PER_FENGINE
 
 // Number of time samples per packet
-#define N_TIME_PER_PACKET 20
+#define N_TIME_PER_PACKET 85 //20
 #if N_TIME_PER_PACKET != NT
     #warning "N_TIME_PER_PACKET must match NT from total_power.h"
 #endif
-#define SAMP_RATE 155.52e6
-#define COARSE_SAMP_RATE (SAMP_RATE/512)
+#define SAMP_RATE 400e6 //155.52e6
+#define COARSE_SAMP_RATE (SAMP_RATE/256)
 #define N_MCNT_PER_SECOND (COARSE_SAMP_RATE/N_TIME_PER_PACKET)
 
 // Number of bits per I/Q sample
@@ -61,11 +61,11 @@
 #define N_BITS_IQ 8
 
 // Number of channels in system
-#define N_CHAN_TOTAL 512
+#define N_CHAN_TOTAL 256 //512
 
 // Number of throwaway channels
 // Changed variable for scalloping fix /////////////////////////////////
-#define N_CHAN_THROWAWAY 12
+#define N_CHAN_THROWAWAY 160 // 12
 //#define N_CHAN_THROWAWAY 112
 ////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +77,7 @@
 
 // Number of channels processed per XGPU instance?
 // Changed variable for scalloping fix /////////////////////////////////
-#define N_CHAN_PER_X 25
+#define N_CHAN_PER_X 8 //25
 //#define N_CHAN_PER_X 20
 ///////////////////////////////////////////////////////////////////////
 #if N_CHAN_PER_X!=XGPU_NFREQUENCY
@@ -92,7 +92,7 @@
 
 // Number of time samples processed per XGPU instance
 // Changed variable for scalloping fix /////////////////////////////////
-#define N_TIME_PER_BLOCK 4000
+#define N_TIME_PER_BLOCK 4250 // 85 time samples per packet x 50 mcnts //4000
 //#define N_TIME_PER_BLOCK 8000
 ////////////////////////////////////////////////////////////////////////
 #if N_TIME_PER_BLOCK!=XGPU_NTIME
@@ -105,7 +105,7 @@
     #warning "Nm must match NM from total_power.h"
 #endif
 
-// Number of bytes per packet
+// Number of bytes per packet (The + 8 offset is for the 8 byte header)
 #define N_BYTES_PER_PACKET ((N_BITS_IQ * 2)*N_INPUTS_PER_FENGINE*N_CHAN_PER_PACKET/8*N_TIME_PER_PACKET + 8)
 
 // Number of bytes in packet payload

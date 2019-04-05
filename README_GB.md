@@ -3,6 +3,10 @@
 ## Installation
 ### Environment
 
+Make sure to:
+
+source /home/onr_python/digital_backend/dibas.bash
+
 In order to mirror the directory structure we have here in Green Bank, I will be assuming the following directory structure:
 
 	$FLAG_DIR

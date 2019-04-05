@@ -74,19 +74,23 @@ flag_fx_threads = flag_net_thread.c \
                      flag_pfb_correlator_thread.c \
                      flag_pfb_corsave_thread.c
 
+flag_ds_threads = flag_net_thread.c \
+                     flag_transpose_thread.c \
+                     flag_datasave_thread.c
+
 # This lists all of the plugins that will be created
-lib_LTLIBRARIES = flag_x.la flag_b.la flag_f.la flag_x_frb.la flag_bx.la flag_fx.la 
+lib_LTLIBRARIES = flag_x.la flag_b.la flag_f.la flag_x_frb.la flag_bx.la flag_fx.la flag_ds.la 
 
 # flag_x.la sources and libraries
 flag_x_la_SOURCES  = $(flag_databuf) $(flag_x_threads) $(fifo_codes)
-flag_x_la_LIBADD   = -lrt -lxgpu -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio
+flag_x_la_LIBADD   = -lrt -lxgpu -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -L/opt/local/lib
 flag_x_la_LDFLAGS  = -avoid-version -module -shared -export-dynamic --enable-shared
 flag_x_la_LDFLAGS += -L"@XGPU_LIBDIR@" -Wl,-rpath,"@XGPU_LIBDIR@"
 flag_x_la_LDFLAGS += -L"@HASHPIPE_LIBDIR@" -Wl,-rpath,"@HASHPIPE_LIBDIR@"
 
 # flag_b.la sources and libraries
 flag_b_la_SOURCES  = $(flag_databuf) $(flag_b_threads) $(fifo_codes)
-flag_b_la_LIBADD   = -lrt -lxgpu -lflagbeamformer -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio
+flag_b_la_LIBADD   = -lrt -lxgpu -lflagbeamformer -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -L/opt/local/lib
 flag_b_la_LDFLAGS  = -avoid-version -module -shared -export-dynamic --enable-shared
 flag_b_la_LDFLAGS += -L"@XGPU_LIBDIR@" -Wl,-rpath,"@XGPU_LIBDIR@"
 flag_b_la_LDFLAGS += -L"@HASHPIPE_LIBDIR@" -Wl,-rpath,"@HASHPIPE_LIBDIR@"
@@ -94,7 +98,7 @@ flag_b_la_LDFLAGS += -L"@FLAGBEAM_LIBDIR@" -Wl, -rpath, "@FLAGBEAM_LIBDIR@"
 
 # flab_f.la sources and libraries
 flag_f_la_SOURCES = $(flag_databuf) $(flag_f_threads) $(fifo_codes)
-flag_f_la_LIBADD  = -lrt -ldl -lutil -L/opt/local/hash/lib -lxgpu -lflagpfb -lcufft -lcudart -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio
+flag_f_la_LIBADD  = -lrt -ldl -lutil -L/opt/local/hash/lib -lxgpu -lflagpfb -lcufft -lcudart -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -L/opt/local/lib
 flag_f_la_LDFLAGS = -avoid-version -module -shared -export-dynamic --enable-shared
 flag_f_la_LDFLAGS += -L"@XGPU_LIBDIR@" -Wl, -rpath, "@XGPU_LIBDIR@"
 flag_f_la_LDFLAGS += -L"@HASHPIPE_LIBDIR@" -Wl, -rpath,"@HASHPIPE_LIBDIR@"
@@ -102,7 +106,7 @@ flag_f_la_LDFLAGS += -L"@FLAGPFB_LIBDIR@" -Wl, -rpath,"@FLAGPFB_LIBDIR@"
 
 # flag_bx.la sources and libraries
 flag_bx_la_SOURCES = $(flag_databuf) $(flag_bx_threads) $(fifo_codes)
-flag_bx_la_LIBADD   = -lrt -lxgpufrb -lflagbeamformer -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio
+flag_bx_la_LIBADD   = -lrt -lxgpufrb -lflagbeamformer -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -L/opt/local/lib
 flag_bx_la_LDFLAGS  = -avoid-version -module -shared -export-dynamic --enable-shared
 flag_bx_la_LDFLAGS += -L"@XGPU_FRB_LIBDIR@" -Wl,-rpath,"@XGPU_FRB_LIBDIR@"
 flag_bx_la_LDFLAGS += -L"@HASHPIPE_LIBDIR@" -Wl,-rpath,"@HASHPIPE_LIBDIR@"
@@ -110,19 +114,27 @@ flag_bx_la_LDFLAGS += -L"@FLAGBEAM_LIBDIR@" -Wl, -rpath, "@FLAGBEAM_LIBDIR@"
 
 # flag_x_frb.la sources and libraries
 flag_x_frb_la_SOURCES = $(flag_databuf) $(flag_x_frb_threads) $(fifo_codes)
-flag_x_frb_la_LIBADD   = -lrt -lxgpufrb -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio
+flag_x_frb_la_LIBADD   = -lrt -lxgpufrb -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -L/opt/local/lib
 flag_x_frb_la_LDFLAGS  = -avoid-version -module -shared -export-dynamic --enable-shared
 flag_x_frb_la_LDFLAGS += -L"@XGPU_FRB_LIBDIR@" -Wl,-rpath,"@XGPU_FRB_LIBDIR@"
 flag_x_frb_la_LDFLAGS += -L"@HASHPIPE_LIBDIR@" -Wl,-rpath,"@HASHPIPE_LIBDIR@"
 
 # flag_fx.la sources and libraries
 flag_fx_la_SOURCES = $(flag_databuf) $(flag_fx_threads) $(fifo_codes)
-flag_fx_la_LIBADD   = -lrt -lxgpupfb -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -lflagpfb -lcufft -lcudart
+flag_fx_la_LIBADD   = -lrt -lxgpupfb -lcublas -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -L/opt/local/lib -lflagpfb -lcufft -lcudart
 flag_fx_la_LDFLAGS  = -avoid-version -module -shared -export-dynamic --enable-shared
 flag_fx_la_LDFLAGS += -L"@XGPU_PFB_LIBDIR@" -Wl,-rpath,"@XGPU_PFB_LIBDIR@"
 flag_fx_la_LDFLAGS += -L"@HASHPIPE_LIBDIR@" -Wl,-rpath,"@HASHPIPE_LIBDIR@"
 flag_fx_la_LDFLAGS += -L"@FLAGPFB_LIBDIR@" -Wl, -rpath,"@FLAGPFB_LIBDIR@"
 
+
+# flag_ds.la sources and libraries
+flag_ds_la_SOURCES  = $(flag_databuf) $(flag_ds_threads) $(fifo_codes)
+flag_ds_la_LIBADD   = -lrt -lxgpu -L/opt/local/NVIDIA/cuda-10.0/lib64 -lcfitsio -L/opt/local/lib
+#flag_ds_la_LIBADD   = -lrt -ldsave -lcfitsio
+flag_ds_la_LDFLAGS  = -avoid-version -module -shared -export-dynamic --enable-shared
+flag_ds_la_LDFLAGS += -L"@XGPU_LIBDIR@" -Wl,-rpath,"@XGPU_LIBDIR@"
+flag_ds_la_LDFLAGS += -L"@HASHPIPE_LIBDIR@" -Wl,-rpath,"@HASHPIPE_LIBDIR@"
 
 # Installed scripts
 # dist_bin_SCRIPTS = paper_init.sh \

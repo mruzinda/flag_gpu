@@ -20,7 +20,8 @@ static hashpipe_status_t * st_p;
 static void * run(hashpipe_thread_args_t * args) {
 
     // Local aliases to shorten access to args fields
-    flag_gpu_correlator_output_databuf_t * db_in = (flag_gpu_correlator_output_databuf_t  *)args->ibuf;
+    //flag_gpu_correlator_output_databuf_t * db_in = (flag_gpu_correlator_output_databuf_t  *)args->ibuf;
+    flag_gpu_input_databuf_t * db_in = (flag_gpu_input_databuf_t *)args->ibuf;
     hashpipe_status_t st = args->st;
     const char * status_key = args->thread_desc->skey;
 
@@ -36,7 +37,8 @@ static void * run(hashpipe_thread_args_t * args) {
     while (run_threads()) {
         printf("SAV: In save thread !!\n"); 
         // Wait for input buffer block to be filled
-        while ((rv=flag_gpu_correlator_output_databuf_wait_filled(db_in, curblock_in)) != HASHPIPE_OK) {
+        //while ((rv=flag_gpu_correlator_output_databuf_wait_filled(db_in, curblock_in)) != HASHPIPE_OK) {
+        while ((rv=flag_gpu_input_databuf_wait_filled(db_in, curblock_in)) != HASHPIPE_OK) {
             //printf("SAV: In save thread (2nd while loop)!!\n"); 
             if (rv==HASHPIPE_TIMEOUT) {
                 //printf("SAV: In save thread (If statement)!!\n"); 
@@ -67,7 +69,7 @@ static void * run(hashpipe_thread_args_t * args) {
         //sprintf(filename, "%s/TGBT16A_508_01/TMP/BF/cor_mcnt_%lld_%s.out", directory, (long long)start_mcnt, BANK);
         //fprintf(stderr, "SAV: Saving to %s\n", filename);
         //sprintf(filename, "/dev/null");
-        sprintf(filename, "%s/cor_mcnt_%lld_%s.out", directory, (long long)start_mcnt, BANK);
+        sprintf(filename, "%s/ds_mcnt_%lld_%s.out", directory, (long long)start_mcnt, BANK);
         fprintf(stderr, "SAV: Saving to %s\n", filename);
         
         #if SAVE == 1
@@ -75,7 +77,8 @@ static void * run(hashpipe_thread_args_t * args) {
             FILE * filePtr = fopen(filename, "w");
 
             int j;
-            for (j = 0; j < N_COR_MATRIX; j++) {
+            //for (j = 0; j < N_COR_MATRIX; j++) {
+            for (j = 0; j < N_BYTES_PER_BLOCK/2; j++) {
                 float p_re = p[j].real;
                 float p_im = p[j].imag;
                 fprintf(filePtr, "%g\n", p_re);
@@ -85,7 +88,8 @@ static void * run(hashpipe_thread_args_t * args) {
         #endif
         
 
-        flag_gpu_correlator_output_databuf_set_free(db_in, curblock_in);
+        //flag_gpu_correlator_output_databuf_set_free(db_in, curblock_in);
+        flag_gpu_input_databuf_set_free(db_in, curblock_in);
         curblock_in = (curblock_in + 1) % db_in->header.n_block;
         pthread_testcancel();
     }
@@ -96,11 +100,11 @@ static void * run(hashpipe_thread_args_t * args) {
 
 // Thread description
 static hashpipe_thread_desc_t xsave_thread = {
-    name: "flag_corsave_thread",
-    skey: "CORSAVE",
+    name: "flag_datasave_thread",
+    skey: "DATASAVE",
     init: NULL,
     run:  run,
-    ibuf_desc: {flag_gpu_correlator_output_databuf_create},
+    ibuf_desc: {flag_gpu_input_databuf_create},
     obuf_desc: {NULL}
 };
 

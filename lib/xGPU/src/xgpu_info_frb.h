@@ -16,17 +16,21 @@
 #define NFREQUENCY 5
 #endif
 
+// No. of time samples x 2 = 85x2 (Same multiple of 2 as flag = 20x2)
 #ifndef NTIME
-#define NTIME 40
+#define NTIME 170
+//#define NTIME 40
 #endif
 
 #ifndef NTIME_PIPE
-#define NTIME_PIPE 40
+#define NTIME_PIPE 170
+//#define NTIME_PIPE 40
 #endif
 
 // Ensure that NTIME_PIPE is a multiple of 4
-#if (NTIME_PIPE/4)*4 != NTIME_PIPE
-#error NTIME_PIPE must be a multiple of 4
+//#if (NTIME_PIPE/4)*4 != NTIME_PIPE
+#if (NTIME_PIPE/5)*5 != NTIME_PIPE
+#error NTIME_PIPE must be a multiple of 5
 #endif
 
 // Ensure that NTIME is a multiple of NTIME_PIPE

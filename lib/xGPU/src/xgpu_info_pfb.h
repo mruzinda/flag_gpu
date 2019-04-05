@@ -12,14 +12,17 @@
 #define NSTATION 32
 #endif
 
+// 50 point fft x 5 coarse channels
 #ifndef NFREQUENCY
-#define NFREQUENCY 160
+#define NFREQUENCY 250
 #endif
 
+// 4250 samples/50 point fft = 85 (go up to the nearest power of 2 which is 128)
 #ifndef NTIME
 #define NTIME 128
 #endif
 
+// 4250 samples/50 point fft = 85 (go up to the nearest power of 2 which is 128)
 #ifndef NTIME_PIPE
 #define NTIME_PIPE 128
 #endif
