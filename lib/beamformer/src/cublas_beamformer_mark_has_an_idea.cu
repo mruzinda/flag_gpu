@@ -150,7 +150,7 @@ long long unsigned int bf_get_xid(){
 }
 
 static cuComplex * d_beamformed = NULL;
-static cuComplex * d_data = NULL;
+static float * d_data = NULL;
 static signed char * d_data1 = NULL; // Device memory for input data
 static signed char * d_data2 = NULL;
 static float * d_outputs;
@@ -168,7 +168,7 @@ void init_beamformer(){
 
 	//cudaMalloc((void **)&d_data2, 2*BN_SAMP*sizeof(signed char));
 
-	cudaMalloc((void **)&d_data, BN_SAMP*sizeof(cuComplex));
+	cudaMalloc((void **)&d_data, 2*BN_SAMP*sizeof(float));
 
 	cudaError_t err_malloc = cudaMalloc((void **)&d_beamformed, BN_TBF*sizeof(cuComplex));
 	if (err_malloc != cudaSuccess) {
@@ -180,7 +180,7 @@ void init_beamformer(){
     /**********************************************************
     * Create a handle for CUBLAS
     **********************************************************/
-    cublasCreate(&handle);
+/*    cublasCreate(&handle);
 	cudaError_t cudaStat;
 
 	int nr_rows_A, nr_cols_A, nr_rows_B, nr_cols_B, nr_rows_C, nr_cols_C;
@@ -227,7 +227,7 @@ void init_beamformer(){
 	free(h_arr_A);
 	free(h_arr_B);
 	free(h_arr_C);
-
+*/ //DM
 	return;
         
 }
@@ -362,7 +362,7 @@ void transpose(signed char* data, signed char* tra_data) {
 }
 
 __global__
-void data_restructure(signed char * data, cuComplex * data_restruc){
+void data_restructure(signed char * data, float * data_restruc){
 
 	/*
 		Repurpose the transpose thread in the hashpipe codes by performing the transpose in the GPU.
@@ -388,8 +388,8 @@ void data_restructure(signed char * data, cuComplex * data_restruc){
 	int in_idx  = i + Ni*c + Nc*Ni*t + Nt*Nc*Ni*f + Nf*Nt*Nc*Ni*m;
 	int out_idx = i + Ni*f + Nf*Ni*t + Nt*Nf*Ni*m + Nm*Nt*Nf*Ni*c;
 
-	data_restruc[out_idx].x = data[2*in_idx]*1.0f;
-	data_restruc[out_idx].y = data[2*in_idx + 1]*1.0f;
+	data_restruc[2*out_idx] = data[2*in_idx]*1.0f;
+	data_restruc[2*out_idx+1] = data[2*in_idx + 1]*1.0f;
 
 //	if((i+Ni*f)<32){
 //		int in_idx  = i + Ni*c + Nc*Ni*t + Nt*Nc*Ni*f + Nf*Nt*Nc*Ni*m;
@@ -521,7 +521,7 @@ void run_beamformer(signed char * data_in, float * data_out) {
 	signed char* d_tra_data_in = d_data1;
 	//signed char* d_tra_data_out = d_data2;
 	//signed char * d_restruct_in = d_data1;
-	cuComplex * d_restruct_out = d_data;
+	float * d_restruct_out = d_data;
 
 	//cudaMemcpy(d_restruct_in, data_in, 2*BN_SAMP*sizeof(signed char), cudaMemcpyHostToDevice);
 	cudaMemcpy(d_tra_data_in, data_in, 2*BN_SAMP*sizeof(signed char), cudaMemcpyHostToDevice);
@@ -545,17 +545,19 @@ void run_beamformer(signed char * data_in, float * data_out) {
 	}
 
 	// Call beamformer function containing cublasCgemmBatched()
-	beamform();
+	//beamform();
 	err_code = cudaGetLastError();
 	if (err_code != cudaSuccess) {
 		printf("CUDA Error (beamform): %s\n", cudaGetErrorString(err_code));
 	}
 
-	cuComplex * d_sti_in = d_beamformed;
-	float * d_sti_out = d_outputs;
+	//DM cuComplex * d_sti_in = d_beamformed;
+	//DM float * d_sti_in = (float *)d_beamformed;
+	
+	//float * d_sti_out = d_outputs;
 
 	// Call STI reduction kernel.
-	sti_reduction<<<dimGrid, dimBlock>>>(d_sti_in, d_sti_out);
+	//sti_reduction<<<dimGrid, dimBlock>>>(d_sti_in, d_sti_out);
 
 	err_code = cudaGetLastError();
 	if (err_code != cudaSuccess) {
@@ -563,7 +565,7 @@ void run_beamformer(signed char * data_in, float * data_out) {
 	}
 
 	// Copy output data from device to host.
-	cudaMemcpy(data_out, d_sti_out, BN_POL*(BN_OUTPUTS*sizeof(float)/2),cudaMemcpyDeviceToHost);
+	cudaMemcpy(data_out, d_restruct_out, BN_SAMP*2*sizeof(float),cudaMemcpyDeviceToHost);
 
 	return;
 }

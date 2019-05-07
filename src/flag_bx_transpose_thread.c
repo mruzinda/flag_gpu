@@ -140,34 +140,50 @@ static void * run(hashpipe_thread_args_t * args) {
                 /**********************************************
                  * Perform transpose
                  **********************************************/
-                int m; int f;
+                int m; int f; int e;
                 int t; int c;
-                uint64_t * in_p;
-                uint64_t * out_p;
-                uint64_t * block_in_p  = db_in->block[curblock_in].data;
+                //uint64_t * in_p;
+                //uint64_t * out_p;
+                //uint64_t * block_in_p  = db_in->block[curblock_in].data;
+                
+                uint8_t * in_p;
+                uint8_t * out_p;
+                uint8_t * block_in_p  = db_in->block[curblock_in].data;
+ 
                 int m2 = 0;
                 for (m = 0; m < Nm; m++) {
                     m2 = m/N_MCNT_PER_FRB_BLOCK;
-                    uint64_t * block_out_p = db_out->block[curblock_out+m2].data;
-                    uint64_t * b_block_out_p = b_db_out->block[b_curblock_out].data;
+                    //uint64_t * block_out_p = db_out->block[curblock_out+m2].data;
+                    //uint64_t * b_block_out_p = b_db_out->block[b_curblock_out].data;
+                    
+                    uint8_t * block_out_p = db_out->block[curblock_out+m2].data;
+                    uint8_t * b_block_out_p = b_db_out->block[b_curblock_out].data;
+ 
                     for (t = 0; t < Nt; t++) {
                         for (f = 0; f < Nf; f++) {
                             for (c = 0; c < Nc; c++) {
                             // for (c = c_start; c < c_end; c++) {
-                                in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
+                            	for (e = 0; e < Ne; e++) {
+                                //in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
+                                	in_p  = block_in_p + flag_input_e_databuf_idx(m,f,t,c,e);
 
                                 // Only process input data if in the chunk
-                                if (c >= c_start && c < c_end) {
+                                	if (c >= c_start && c < c_end) {
                                     // Get pointer for FRB Correlator buffer
-                                    out_p = block_out_p + flag_frb_gpu_input_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c % N_CHAN_PER_FRB_BLOCK);
+                                    //out_p = block_out_p + flag_frb_gpu_input_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c % N_CHAN_PER_FRB_BLOCK);
+                                    		out_p = block_out_p + flag_frb_gpu_input_e_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c % N_CHAN_PER_FRB_BLOCK,e);
                                     // Copy data to buffer
-                                    memcpy(out_p, in_p, 128/8);
-                                }
+                                    //memcpy(out_p, in_p, 128/8);
+                                    		memcpy(out_p, in_p, 2);
+                               		 }
 
                                 // Get pointer for Beamformer buffer
-                                out_p = b_block_out_p + flag_gpu_input_databuf_idx(m,f,t,c);
+                                //out_p = b_block_out_p + flag_gpu_input_databuf_idx(m,f,t,c);
+                                out_p = b_block_out_p + flag_gpu_input_e_databuf_idx(m,f,t,c,e);
                                 // Copy data to buffer
-                                memcpy(out_p, in_p, 128/8);
+                                //memcpy(out_p, in_p, 128/8);
+                                memcpy(out_p, in_p, 2);
+				}
                             }
                         }
                     }

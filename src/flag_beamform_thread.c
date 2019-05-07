@@ -57,7 +57,8 @@ static void * run(hashpipe_thread_args_t * args) {
     hashpipe_status_unlock_safe(&st);
     
     char w_dir[70];
-    sprintf(w_dir, "%s/weights.in", weightdir);
+    //sprintf(w_dir, "%s/weights.in", weightdir);
+    sprintf(w_dir, "%s/dummy_w_A.bin", weightdir);
     printf("BF: Weight file name: %s\n", w_dir);
 
     // update_weights("./weights.in");

@@ -45,7 +45,8 @@ static void * run(hashpipe_thread_args_t * args) {
     hashpipe_status_lock_safe(&st);
     hputs(st.buf, "INTSTAT", "off");
     hputi8(st.buf, "INTSYNC", 0);
-    hputr4(st.buf, "REQSTI", 0.01); // Requested STI length (set by Dealer/Player)
+    //hputr4(st.buf, "REQSTI", 0.01); // Requested STI length (set by Dealer/Player)
+    hputr4(st.buf, "REQSTI", 0.0025); // Requested STI length (set by Dealer/Player)
     hputr4(st.buf, "ACTSTI", 0.0); // Delivered (actual) STI length (based on whole number of blocks)
     hputi4(st.buf, "INTCOUNT", 1); // Number of blocks to integrate per STI
     hgeti4(st.buf, "GPUDEV", &gpu_dev);
@@ -240,7 +241,7 @@ static void * run(hashpipe_thread_args_t * args) {
             xgpuCudaXengine(&context, doDump ? SYNCOP_DUMP : SYNCOP_SYNC_TRANSFER);
        
             //printf("COR: doDump = %d\n", doDump);
-            //printf("COR: start_mcnt = %lld, last_mcnt = %lld\n", (long long int)start_mcnt, (long long int)last_mcnt);
+            //printf("COR: start_mcnt = %lld, last_mcnt = %lld, Nm = %lld, int_count = %lld\n", (long long int)start_mcnt, (long long int)last_mcnt, (long long int)Nm, (long long int)int_count);
             if (doDump) {
                 xgpuClearDeviceIntegrationBuffer(&context);
                 //xgpuReorderMatrix((Complex *)db_out->block[curblock_out].data);

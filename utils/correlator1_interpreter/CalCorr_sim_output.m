@@ -19,8 +19,8 @@ clearvars;
 % R(1:2:end) = real(tmp(1,:));
 % R(2:2:end) = imag(tmp(1,:));
 
-Nele = 24;
-Nele_tot = 64;
+Nele = 18;
+Nele_tot = 32; %192; % 64;
 Nbin = 8;
 Nsamp = 4250;
 Nbaselines_tot = (Nele_tot/2 + 1)*Nele_tot;
@@ -83,7 +83,9 @@ for k = 1:length(mcnt)
             fig_mod_plot = 40;
         end
         subplot(2,4,fig_mod_plot);
-        imagesc(abs(Rtot(1:Nele, 1:Nele, Nb)));
+%         imagesc(abs(Rtot(1:Nele, 1:Nele, Nb)));
+%        imagesc(abs(Rtot(1:Nele_tot, 1:Nele_tot, Nb)));
+        imagesc(abs(Rtot([1:6,9:14,17:22], [1:6,9:14,17:22], Nb)));
         title(['Bin ', num2str(Nb)]);
         drawnow;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

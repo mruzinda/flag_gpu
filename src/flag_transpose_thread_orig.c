@@ -121,34 +121,21 @@ static void * run(hashpipe_thread_args_t * args) {
 
                 int m; int f;
                 int t; int c; int e;
-                //uint64_t * in_p;
-                //uint64_t * out_p;
-                //uint64_t * block_in_p  = db_in->block[curblock_in].data;
-                //uint64_t * block_out_p = db_out->block[curblock_out].data;
+                uint64_t * in_p;
+                uint64_t * out_p;
+                uint64_t * block_in_p  = db_in->block[curblock_in].data;
+                uint64_t * block_out_p = db_out->block[curblock_out].data;
 // mtfc
-                uint8_t * in_p;
-                uint8_t * out_p;
-                uint8_t * block_in_p  = db_in->block[curblock_in].data;
-                uint8_t * block_out_p = db_out->block[curblock_out].data;
                 for (m = 0; m < Nm; m++) { 
-                    for (f = 0; f < Nf; f++) {
-                    	for (t = 0; t < Nt; t++) {
+                    for (t = 0; t < Nt; t++) {
+                        for (f = 0; f < Nf; f++) {
                             for (c = 0; c < Nc; c++) {
-                            	for (e = 0; e < Ne; e++) {
-                                //in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
-                                //out_p = block_out_p + flag_gpu_input_databuf_idx(m,f,t,c);
-                                //memcpy(out_p, in_p, 128/8);
-                                // 8 bit copies ////////////////////////////////////////
-					out_p = block_out_p + flag_gpu_input_e_databuf_idx(m,f,t,c,e);
-                                	if(e < 6){
-                                	in_p  = block_in_p + flag_input_e_databuf_idx(m,f,t,c,e);
-					memcpy(out_p, in_p, 2);
-                                	}
-					//out_p = block_out_p + onr_gpu_input_databuf_idx(m,f,t,c,e);
-					
-				////////////////////////////////////////////////////////
+                            	//for (e = 0; e < N_INPUTS_PER_FENGINE; e++) {
+                                in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
+                                out_p = block_out_p + flag_gpu_input_databuf_idx(m,f,t,c);
+                                memcpy(out_p, in_p, 128/8);
                                 	//db_out->block[curblock_out].data[flag_gpu_input_e_databuf_idx(m,f,t,c,e)] = db_in->block[curblock_in].data[flag_input_e_databuf_idx(m,f,t,c,e)];
-                            	}
+                            	//}
                             }
                         }
                     }

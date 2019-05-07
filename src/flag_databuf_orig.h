@@ -15,7 +15,7 @@
 // Total number of antennas (nominally 40)
 //#define N_INPUTS 64
 //#define N_INPUTS 192L // L suffix turns this constant into a 'long' type instead of an int needed for later definition 'N_BYTES_PER_PFB_BLOCK'
-#define N_INPUTS 32 //The correlator needs a multiple of 32. We "zero pad" the buffer to acheive 32 instead of 18
+#define N_INPUTS 32
 
 #if N_INPUTS!=(2*XGPU_NSTATION)
     #warning "N_INPUTS must match inputs needed by xGPU"
@@ -132,23 +132,19 @@
 #define Nf (N_FENGINES) // Number of fengines
 #define Nt (N_TIME_PER_PACKET) // Number of time samples per packet
 #define Nc (N_CHAN_PER_PACKET) // Number of channels per packet
-#define Ne 8 //DM (N_INPUTS_PER_FENGINE) // Number of antennas per SNAP board
-
 //#define flag_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(c+Nc*(t+Nt*(f+Nf*m))))
 //#define flag_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(c+Nc*(t+Nt*(f+Nf*m))))
-//#define flag_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/6)*(c+Nc*(t+Nt*(f+Nf*m))))
-#define flag_input_e_databuf_idx(m,f,t,c,e) (2*(e + (Ne-2)*(c+Nc*(t+Nt*(f+Nf*m)))))
+#define flag_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/6)*(c+Nc*(t+Nt*(f+Nf*m))))
+//#define flag_input_e_databuf_idx(m,f,t,c,e) (2*(e + N_INPUTS_PER_FENGINE*(c+Nc*(t+Nt*(f+Nf*m)))))
 //#define flag_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(c+Nc*(t+Nt*(f+Nf*m))))
 
 // Macro to compute data word offset for transposed matrix
 //#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(c+Nc*(f+Nf*(t+Nt*m))))
 //#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(f+Nf*(c+Nc*(t+Nt*m))))
-//#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/6)*(f+Nf*(c+Nc*(t+Nt*m))))
-#define flag_gpu_input_e_databuf_idx(m,f,t,c,e) (2*(e+(Ne)*(f+Nf*(c+Nc*(t+Nt*m)))))
+#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/6)*(f+Nf*(c+Nc*(t+Nt*m))))
+//#define flag_gpu_input_e_databuf_idx(m,f,t,c,e) (2*(e+N_INPUTS_PER_FENGINE*(f+Nf*(c+Nc*(t+Nt*m)))))
 //#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+Nc*(t+Nt*m))))
 //#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(f+Nf*(c+Nc*(t+Nt*m))))
-
-//DM #define onr_gpu_input_databuf_idx(m,f,t,c,e) 
 
 // Number of entries in output correlation matrix
 // #define N_COR_MATRIX (N_INPUTS*(N_INPUTS + 1)/2*N_CHAN_PER_X)
@@ -168,8 +164,7 @@
 // Macro to comput data word offset for tranposed matrix in FRB mode
 //#define flag_frb_gpu_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m))))
 //#define flag_frb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m))))
-//#define flag_frb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m)))/sizeof(uint64_t))
-#define flag_frb_gpu_input_e_databuf_idx(m,f,t,c,e) ((2/sizeof(uint8_t))*(e+Ne*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m)))))
+#define flag_frb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m)))/sizeof(uint64_t))
 
 // Macros specific to the fine-channel correlator (PFB correlator)
 #define N_TIME_PER_PFB_BLOCK XGPU_PFB_NTIME
@@ -182,8 +177,7 @@
 
 //#define flag_pfb_gpu_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m))))
 //#define flag_pfb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m))))
-//#define flag_pfb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m)))/sizeof(uint64_t))
-#define flag_pfb_gpu_input_e_databuf_idx(m,f,t,c,e) ((2/sizeof(uint8_t))*(e+Ne*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m)))))
+#define flag_pfb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m)))/sizeof(uint64_t))
 
 // Macros to maintain cache alignment
 #define CACHE_ALIGNMENT (128)
@@ -216,8 +210,7 @@ typedef uint8_t flag_input_header_cache_alignment[
 typedef struct flag_input_block {
     flag_input_header_t header;
     flag_input_header_cache_alignment padding;
-    //uint64_t data[N_BYTES_PER_BLOCK/sizeof(uint64_t)];
-    uint8_t data[N_BYTES_PER_BLOCK/sizeof(uint8_t)]; // Data type change to make it more dynamic
+    uint64_t data[N_BYTES_PER_BLOCK/sizeof(uint64_t)];
 } flag_input_block_t;
 
 // The data buffer structure
@@ -226,22 +219,6 @@ typedef struct flag_input_databuf {
     hashpipe_databuf_cache_alignment padding; // Only to maintain alignment
     flag_input_block_t block[N_INPUT_BLOCKS];
 } flag_input_databuf_t;
-
-// New structs for ONR ///////////////////////////////////////
-// A typedef for a block of data in the buffer
-//typedef struct flag_input_block_onr {
-//    flag_input_header_t header;
-//    flag_input_header_cache_alignment padding;
-//    uint16_t data[N_BYTES_PER_BLOCK/sizeof(uint16_t)];
-//} flag_input_block_onr_t;
-
-// The data buffer structure
-//typedef struct flag_input_databuf_onr {
-//    hashpipe_databuf_t header;
-//    hashpipe_databuf_cache_alignment padding; // Only to maintain alignment
-//    flag_input_block_onr_t block[N_INPUT_BLOCKS];
-//} flag_input_databuf_onr_t;
-//////////////////////////////////////////////////////////////
 
 /*
  * GPU INPUT BUFFER STRUCTURES
@@ -265,8 +242,7 @@ typedef uint8_t flag_gpu_input_header_cache_alignment[
 typedef struct flag_gpu_input_block {
     flag_gpu_input_header_t header;
     flag_gpu_input_header_cache_alignment padding;
-    //uint64_t data[N_BYTES_PER_BLOCK/sizeof(uint64_t)];
-    uint8_t data[N_BYTES_PER_BLOCK/sizeof(uint8_t)]; // Data type changed to make it more dynamic
+    uint64_t data[N_BYTES_PER_BLOCK/sizeof(uint64_t)];
 } flag_gpu_input_block_t;
 
 // The data buffer structure
@@ -276,22 +252,6 @@ typedef struct flag_gpu_input_databuf {
     flag_gpu_input_block_t block[N_GPU_INPUT_BLOCKS];
 } flag_gpu_input_databuf_t;
 
-// New structs for ONR ///////////////////////////////////////
-// A typedef for a block of data in the buffer
-//typedef struct flag_gpu_input_block_onr {
-//    flag_gpu_input_header_t header;
-//    flag_gpu_input_header_cache_alignment padding;
-//    uint16_t data[N_BYTES_PER_BLOCK/sizeof(uint16_t)];
-//} flag_gpu_input_block_t;
-
-// The data buffer structure
-//typedef struct flag_gpu_input_databuf_onr {
-//    hashpipe_databuf_t header;
-//    hashpipe_databuf_cache_alignment padding;
-//    flag_gpu_input_block_onr_t block[N_GPU_INPUT_BLOCKS];
-//} flag_gpu_input_databuf_onr_t;
-//////////////////////////////////////////////////////////////
-
 /*
  * FRB GPU INPUT BUFFER STRUCTURES
  */
@@ -300,8 +260,7 @@ typedef struct flag_gpu_input_databuf {
 typedef struct flag_frb_gpu_input_block {
     flag_gpu_input_header_t header;
     flag_gpu_input_header_cache_alignment padding;
-    //uint64_t data[N_BYTES_PER_FRB_BLOCK/sizeof(uint64_t)];
-    uint8_t data[N_BYTES_PER_FRB_BLOCK/sizeof(uint8_t)]; // Data type changed to make it more dynamic
+    uint64_t data[N_BYTES_PER_FRB_BLOCK/sizeof(uint64_t)];
 } flag_frb_gpu_input_block_t;
 
 // The data buffer structure
@@ -320,8 +279,7 @@ typedef struct flag_frb_gpu_input_databuf {
 typedef struct flag_pfb_gpu_input_block {
     flag_gpu_input_header_t header;
     flag_gpu_input_header_cache_alignment padding;
-    //uint64_t data[N_BYTES_PER_PFB_BLOCK/sizeof(uint64_t)];
-    uint8_t data[N_BYTES_PER_PFB_BLOCK/sizeof(uint8_t)]; // Data type changed to make it more dynamic
+    uint64_t data[N_BYTES_PER_PFB_BLOCK/sizeof(uint64_t)];
 } flag_pfb_gpu_input_block_t;
 
 // The data buffer structure
@@ -403,7 +361,7 @@ typedef struct flag_pfb_gpu_correlator_output_databuf {
 typedef struct flag_gpu_beamformer_output_block {
     flag_gpu_output_header_t header;
     flag_gpu_output_header_cache_alignment padding;
-    float data[N_BEAM_SAMPS]; 
+    float data[N_BEAM_SAMPS];
 } flag_gpu_beamformer_output_block_t;
 
 // flag_gpu_beamformer_output_databuf

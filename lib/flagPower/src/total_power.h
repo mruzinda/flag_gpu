@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define NF 8 		// Number of Fengines
-#define NI 8 		// Number of inputs per Fengine
-#define NA (NF*NI) 	// Number of total antennas
+#define NF 4 //8 //3 //32 //8 //3 		// Number of Fengines
+#define NI 6 //8 //6  //8 //6 		// Number of inputs per Fengine
+#define NA 32 //(NF*NI) //64 //32 //(NF*NI) 	// Number of total antennas
 #define NC 8 // 25 // 20 		// Number of frequency channels
 #define NT 85 // 20 		// Number of time samples per packet/mcnt
 #define NM 50 // 200 // 400 	// Number of packets/mcnts per block

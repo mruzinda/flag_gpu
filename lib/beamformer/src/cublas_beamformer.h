@@ -16,7 +16,8 @@
 #define BN_TIME_STI 50 // 40	//80 // Number of decimated time samples per integrated beamformer output
 #define BN_STI	   (BN_TIME/BN_TIME_STI) // Number of short time integrations
 #define BN_STI_BLOC 64
-#define BN_ELE_BLOC 64 // 64
+//#define BN_ELE_BLOC 64
+#define BN_ELE_BLOC 24 //192
 #define BN_SAMP     (BN_ELE_BLOC*BN_BIN*BN_TIME) // Number of complex samples to process
 #define BN_WEIGHTS  (BN_ELE_BLOC*BN_BIN*BN_BEAM) // Number of complex beamformer weights
 #define BN_OUTPUTS  (BN_BEAM*BN_STI*BN_BIN) // Number of complex samples in output structure

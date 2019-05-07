@@ -80,6 +80,7 @@ flag_ds_threads = flag_net_thread.c \
 
 # This lists all of the plugins that will be created
 lib_LTLIBRARIES = flag_x.la flag_b.la flag_f.la flag_x_frb.la flag_bx.la flag_fx.la flag_ds.la 
+#lib_LTLIBRARIES = flag_x.la flag_b.la flag_ds.la 
 
 # flag_x.la sources and libraries
 flag_x_la_SOURCES  = $(flag_databuf) $(flag_x_threads) $(fifo_codes)

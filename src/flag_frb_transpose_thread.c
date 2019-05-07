@@ -121,23 +121,37 @@ static void * run(hashpipe_thread_args_t * args) {
                 /**********************************************
                  * Perform transpose
                  **********************************************/
-                int m; int f;
+                int m; int f; int e;
                 int t; int c;
-                uint64_t * in_p;
-                uint64_t * out_p;
-                uint64_t * block_in_p  = db_in->block[curblock_in].data;
+                //uint64_t * in_p;
+                //uint64_t * out_p;
+                //uint64_t * block_in_p  = db_in->block[curblock_in].data;
+
+                uint8_t * in_p;
+                uint8_t * out_p;
+                uint8_t * block_in_p  = db_in->block[curblock_in].data;
+ 
                 int m2 = 0;
                 for (m = 0; m < Nm; m++) {
                     m2 = m/N_MCNT_PER_FRB_BLOCK;
-                    uint64_t * block_out_p = db_out->block[curblock_out+m2].data;
+                    //uint64_t * block_out_p = db_out->block[curblock_out+m2].data;
+                    uint8_t * block_out_p = db_out->block[curblock_out+m2].data;
                     for (t = 0; t < Nt; t++) {
                         for (f = 0; f < Nf; f++) {
                             for (c = c_start; c < c_end; c++) {
                             // for (c = 0; c < Nc; c++) {
-                                in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
-                                out_p = block_out_p + flag_frb_gpu_input_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c % N_CHAN_PER_FRB_BLOCK);
+                        	for (e = 0; f < Ne; e++) {
+                                //in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
+                                //out_p = block_out_p + flag_frb_gpu_input_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c % N_CHAN_PER_FRB_BLOCK);
+                                // // out_p = block_out_p + flag_gpu_input_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c);
+                                //memcpy(out_p, in_p, 128/8);
+
+                                in_p  = block_in_p + flag_input_e_databuf_idx(m,f,t,c,e);
+                                out_p = block_out_p + flag_frb_gpu_input_e_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c % N_CHAN_PER_FRB_BLOCK,e);
                                 // out_p = block_out_p + flag_gpu_input_databuf_idx(m % N_MCNT_PER_FRB_BLOCK,f,t,c);
-                                memcpy(out_p, in_p, 128/8);
+                                memcpy(out_p, in_p, 2);
+	
+				}
                             }
                         }
                     }

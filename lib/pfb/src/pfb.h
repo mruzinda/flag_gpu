@@ -25,7 +25,7 @@
 #define NUM_TAPS				8	// PFB Decimation factor
 #define DEF_NUM_CHANNELS		8 // 25  // System spec for total number of channels
 #define PFB_CHANNELS			5	// Number of coarse channels through PFB
-#define DEF_NUM_ELEMENTS		64  // System spec for number of elements
+#define DEF_NUM_ELEMENTS		32 //64 //32 // 192 //64  // System spec for number of elements
 #define SAMPLES					4250 // 4000// Time samples.
 
 #define PFB_OUTPUT_BLOCK_SIZE	(SAMPLES+3*32)*PFB_CHANNELS*DEF_NUM_ELEMENTS*2 // (3*DEF_LEN_SPEC is to add more samples on the end to make it look like 128 pfb windows had been processed for the pfb correlator)

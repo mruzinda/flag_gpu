@@ -73,16 +73,29 @@ static void * run(hashpipe_thread_args_t * args) {
         fprintf(stderr, "SAV: Saving to %s\n", filename);
         
         #if SAVE == 1
-            Complex * p = (Complex *)db_in->block[curblock_in].data;
+            //Complex * p = (Complex *)db_in->block[curblock_in].data;
+            ComplexInput * p = (ComplexInput *)db_in->block[curblock_in].data;
             FILE * filePtr = fopen(filename, "w");
 
             int j;
             //for (j = 0; j < N_COR_MATRIX; j++) {
             for (j = 0; j < N_BYTES_PER_BLOCK/2; j++) {
-                float p_re = p[j].real;
-                float p_im = p[j].imag;
-                fprintf(filePtr, "%g\n", p_re);
-                fprintf(filePtr, "%g\n", p_im);
+                //float p_re = p[j].real;
+                //float p_im = p[j].imag;
+                //fprintf(filePtr, "%g\n", p_re);
+                //fprintf(filePtr, "%g\n", p_im);
+                if (j>=18 && j<=20) {
+			printf("Bin 1, input 1:\n Real save in = %hhu\n Imag save in = %hhu\n", p[j].real, p[j].imag);
+		}
+                else if (j>=108 && j<=120) {
+			printf("Bin 6, input 1:\n Real save in = %hhu\n Imag save in = %hhu\n", p[j].real, p[j].imag);
+		}
+ 
+                uint8_t p_re = p[j].real;
+                uint8_t p_im = p[j].imag;
+                fprintf(filePtr, "%d\n", p_re);
+                fprintf(filePtr, "%d\n", p_im);
+ 
             }
             fclose(filePtr);
         #endif

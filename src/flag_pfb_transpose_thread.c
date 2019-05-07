@@ -119,20 +119,32 @@ static void * run(hashpipe_thread_args_t * args) {
                 /**********************************************
                  * Perform transpose
                  **********************************************/
-                int m; int f;
+                int m; int f; int e;
                 int t; int c;
-                uint64_t * in_p;
-                uint64_t * out_p;
-                uint64_t * block_in_p  = db_in->block[curblock_in].data;
-		        uint64_t * block_out_p = db_out->block[curblock_out].data;
+                //uint64_t * in_p;
+                //uint64_t * out_p;
+                //uint64_t * block_in_p  = db_in->block[curblock_in].data;
+		//uint64_t * block_out_p = db_out->block[curblock_out].data;
+
+                uint8_t * in_p;
+                uint8_t * out_p;
+                uint8_t * block_in_p  = db_in->block[curblock_in].data;
+		uint8_t * block_out_p = db_out->block[curblock_out].data;
+
+
                 for (m = 0; m < Nm; m++) {
                     for (t = 0; t < Nt; t++) {
                         for (f = 0; f < Nf; f++) {
                             for (c = c_start; c < c_end; c++) {
                             // for (c = 0; c < Nc; c++) {
-                                in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
-                                out_p = block_out_p + flag_pfb_gpu_input_databuf_idx(m,f,t,c % N_CHAN_PFB_SELECTED);
-                                memcpy(out_p, in_p, 128/8);
+                            	for (e = 0; e < Ne; e++) {
+                                //in_p  = block_in_p + flag_input_databuf_idx(m,f,t,c);
+                                //out_p = block_out_p + flag_pfb_gpu_input_databuf_idx(m,f,t,c % N_CHAN_PFB_SELECTED);
+                                //memcpy(out_p, in_p, 128/8);                                
+                                	in_p  = block_in_p + flag_input_e_databuf_idx(m,f,t,c,e);
+                                	out_p = block_out_p + flag_pfb_gpu_input_e_databuf_idx(m,f,t,c % N_CHAN_PFB_SELECTED,e);
+                                	memcpy(out_p, in_p, 2);
+                            	}
                             }
                         }
                     }

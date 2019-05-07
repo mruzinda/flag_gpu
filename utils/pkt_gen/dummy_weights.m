@@ -4,9 +4,9 @@
 
 % Reshape weights
 N_beam = 14;
-N_ele = 64;
-N_bin_total = 500;
-N_bin = 25;
+N_ele = 24; %64;
+N_bin_total = 96;
+N_bin = 8;
 N_pol = 2;
 
 %     w_padded = zeros(N_ele, N_beam, N_pol, N_bin_total);
@@ -18,12 +18,11 @@ w_padded = ones(N_ele, N_bin_total, N_beam, N_pol);
 % Save data into weight file formatted for RTBF code
 banks = {'A', 'B', 'C', 'D',...
     'E', 'F', 'G', 'H',...
-    'I', 'J', 'K', 'L',...
-    'M', 'N', 'O', 'P',...
-    'Q', 'R', 'S', 'T'};
+    'I', 'J', 'K', 'L'};
 
 interleaved_w = zeros(2*N_ele*N_bin*N_beam*N_pol,1);
-chan_idx = [1:5, 101:105, 201:205, 301:305, 401:405];
+% chan_idx = [1:5, 101:105, 201:205, 301:305, 401:405];
+chan_idx = [1:8];
 
 for b = 1:length(banks)
     % Get bank name
@@ -31,7 +30,7 @@ for b = 1:length(banks)
     
     % Extract channels for bank
     % w1 = w_padded(:,:,:,chan_idx+5*(b-1));
-    w1 = w_padded(:,chan_idx+5*(b-1),:,:);
+    w1 = w_padded(:,chan_idx+8*(b-1),:,:);
     
     %%% Just for testing - Used .mat file to verify that the .bin file was
     %%% the same

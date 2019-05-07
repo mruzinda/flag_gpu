@@ -8,7 +8,7 @@ delete(u);
 
 % System Constants
 fs        = 155e6; % Sampling frequency - used for noise level
-Ninputs   = 24; % 40;    % Number of inputs/antennas
+Ninputs   = 18; %24; % 40;    % Number of inputs/antennas
 Nbins     = 96; % 500; % 400;   % Total number of frequency bins
 Nfft      = 256; % 512;   % F-engine FFT size
 Nfengines = 3; % 5;     % Number of F-engines
@@ -38,9 +38,9 @@ sigma2 = kb*Tsys*BW;    % Noise power per channel
 % 7 -> Send ULA data
 % 8 -> Send exponentially correlated noise.
 % 9 -> Send pulsar data
+% 10 -> Send
 % else -> Send all zeros
-data_flag = 5;
-
+data_flag = 9;
 % Sinusoid parameters (only used if data_flag = 2)
 % It should be noted that the phase of the sinusoid will not change between
 % time samples-- this is just for convenience. A more sophisticated packet
@@ -101,7 +101,7 @@ kw_x_imag = int8(((imag(kw_x) - d_min)/(d_max - d_min) - 0.5) * 128);
 kw_x_quant = single(kw_x_real) + 1j*single(kw_x_imag);
 kw_Rhat = (kw_x_quant*kw_x_quant')/kwNs;
 
-save('matlab_corr.mat', 'kw_Rhat');
+% save('matlab_corr.mat', 'kw_Rhat');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Case 6 - Complex Sinusoid
@@ -151,8 +151,8 @@ CEN_N = 4250;
 CEN = CEN_Asqr/sqrt(2)*(randn(Ninputs, CEN_N) + 1j*randn(Ninputs, CEN_N));
 
 CEN_R = 1/CEN_N*(CEN*CEN');
-figure(99);
-imagesc(abs(CEN_R));
+% figure(99);
+% imagesc(abs(CEN_R));
 
 c_max = 4;
 c_min = -4;
@@ -166,7 +166,7 @@ CEN_imag = int8(((imag(CEN) - c_min)/(c_max - c_min) - 0.5) * 128);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Increase the range of tau when dispersion measure causes m_D to exceed
 % time samples.
-D = 10; % Dispersion measure 
+D = 5; % Previously 10 % Dispersion measure 
 % freq = (0:499)*(303e3) + 1300e6; % All frequencies
 freq = (0:95)*(1562.5e3) + 1450e6; % All frequencies
 % fo = freq(floor(length(freq)/2)); % Center frequency
@@ -219,7 +219,7 @@ for xid = 1:Nxengines
 %     remoteHost = ['10.10.1.', num2str(xid)];
 
     if xid == 1
-        remoteHost = '10.17.16.1'; % It was 208 before
+        remoteHost = '10.17.16.4'; % It was 208 before
     end
 %     if xid == 2
 %         remoteHost = '10.17.16.2'; % It was 208 before
@@ -246,7 +246,7 @@ end
 mcnt = 0; % Each mcnt represents 20 packets across all F-engines in the
           % same time frame
   
-for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,800,1000,1200]  % No scalloping fix %while mcnt <= 10000
+for mcnt = [0:301,400,500,600,700] % [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,800,1000,1200]  % No scalloping fix %while mcnt <= 10000
     disp(['Sending mcnt = ', num2str(mcnt)]);
     for xid = [1:1] % Set to a single X-engine for single HPC testing (Richard B.)
         for fid = 1:Nfengines
@@ -260,10 +260,33 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
             % bits 49-56: F-engine ID (fid)
             % bits 57-64: X-engine ID
             % LSB = 64
-            header = uint64(mcnt)*2^20 + uint64(15)*2^16 + uint64(fid-1)*2^8 + uint64(xid-1);
+%             header = uint64(mcnt)*2^20 + uint64(15)*2^16 + uint64(fid-1)*2^8 + uint64(xid-1);
             
-            % Allocate memory for packet payload
-            payload = zeros(16*Ntime_per_packet*Nbin_per_x+8, 1, 'uint8');
+%             % Changed to match ONR packetizer header %%%%%%%%%%%%%%%%%%%%%%
+%             % bits  1-4: F-engine ID (fid)
+%             % bits 5-8: X-engine ID (xid)
+%             % bits 9-20: Reserved
+%             % bits 20-64: mcnt
+%             header = uint64(mcnt)*2^20 + uint64(15)*2^8 + uint64(xid-1)*2^4 + uint64(fid-1);
+%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            % Changed to match ONR packetizer header (version 2) %%%%%%%%%%
+            % bits  1-4: F-engine ID (fid)
+            % bits 5-8: X-engine ID (xid)
+            % bits 9-64: mcnt
+            header = uint64(mcnt)*2^8 + uint64(xid-1)*2^4 + uint64(fid-1);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            % Allocate memory or packet payload %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             payload = zeros(16*Ntime_per_packet*Nbin_per_x+8, 1, 'uint8');
+%             payload = zeros(2*Nin_per_f*Ntime_per_packet*Nbin_per_x+8, 1, 'uint8');
+            payload = zeros(2*(Nin_per_f)*Ntime_per_packet*Nbin_per_x+8, 1, 'uint8');
+            % The 16 in '16*Ntime_per_packet*Nbin_per_x+8' works for both 
+            % FLAG and ONR with Ninputs=24 because each f-engine has 8 
+            % inputs so RealImag*Ninputs = 2*8 = 16.
+            % So with 18 inputs, that 16 would be a 12: RealImag*Ninputs =
+            % 2*6 = 12.
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             % Shift header information into packet
             % (The socket wants bytes, so we need to mask and shift to get
@@ -286,7 +309,8 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
             w_idx = w_idx + 1;
             
             % Generate signal to send
-            data = zeros(Nin_per_f, 2, Nbin_per_x, Ntime_per_packet); % 8x2x25x20
+            data = zeros(Nin_per_f, 2, Nbin_per_x, Ntime_per_packet); % 6x2x8x85
+%             data = zeros(Nin_per_f+2, 2, Nbin_per_x, Ntime_per_packet); % 8x2x8x85
             switch data_flag
                 case 1 % Send white noise
                     sig = sqrt(sigma2/2);
@@ -302,6 +326,8 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
                     end
                 case 3 % Send all ones
                     data = ones(Nin_per_f, 2, Nbin_per_x, Ntime_per_packet);
+                    %data(:,1,6,:) = ones(Nin_per_f, Ntime_per_packet);
+                    %data(:,1,6,:) = repmat((1:6)',1,85) + fid*7;
                 case 4 % Send chirp
                     time_start = mcnt*Ntime_per_packet;
                     if fid == c_fid
@@ -322,18 +348,25 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
                     end
                 case 5 % Send correlated data in single bin
                     if xid == kw_xid
-                        f_idxs = (fid - 1)*8+1:fid*8;
+%                         f_idxs = (fid - 1)*8+1:fid*8; % For N_inputs = 24
+%                         therefore N_inputs_per_fengine = 8
+                        f_idxs = (fid - 1)*Nin_per_f+1:fid*Nin_per_f; % For N_inputs = 18
+%                         therefore N_inputs_per_fengine = 6
                         %f_idxs = f_idxs(end:-1:1);
 %                         t_idxs = mod(mcnt*20 + 1:(mcnt+1)*20, kwNs);
-                        t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, kwNs);
+%                         t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, kwNs);
+                        t_idxs = mod(mcnt*Ntime_per_packet + 1:(mcnt+1)*Ntime_per_packet, kwNs);
                         % disp(t_idxs);
                         t_idxs(t_idxs == 0) = kwNs;
+%                         data(1:end-2, 1, kw_bin_r, :) = kw_x_real(f_idxs,t_idxs);
+%                         data(1:end-2, 2, kw_bin_r, :) = kw_x_imag(f_idxs,t_idxs);
                         data(:, 1, kw_bin_r, :) = kw_x_real(f_idxs,t_idxs);
                         data(:, 2, kw_bin_r, :) = kw_x_imag(f_idxs,t_idxs);
                         data(data < 0) = 2^8 + data(data < 0);
                     end
                 case 6 % Send complex sinusoidal data
-                    t_idxs = mod(mcnt*20 + 1:(mcnt+1)*20, cs_Ns);
+%                     t_idxs = mod(mcnt*20 + 1:(mcnt+1)*20, cs_Ns);
+                    t_idxs = mod(mcnt*Ntime_per_packet + 1:(mcnt+1)*Ntime_per_packet, cs_Ns);
                     t_idxs(t_idxs == 0) = kwNs;
                     for cs_bin = 1:Nbin_per_x
                         for cs_ele = 1:Nin_per_f
@@ -344,9 +377,10 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
                     data(data < 0) = 2^8 + data(data < 0);
                 case 7 % Send ULA complex data
 %                     t_idxs = mod(mcnt*20 + 1:(mcnt+1)*20, ULA_N);
-                    t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, ULA_N);
+%                     t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, ULA_N);
+                    t_idxs = mod(mcnt*Ntime_per_packet + 1:(mcnt+1)*Ntime_per_packet, ULA_N);
                     t_idxs(t_idxs == 0) = ULA_N;
-                    f_idxs = (fid - 1)*8+1:fid*8;
+                    f_idxs = (fid - 1)*Nin_per_f+1:fid*Nin_per_f;
 %                     freq_idxs = 5*(xid-1) + [1:5, 101:105, 201:205, 301:305, 401:405];
                     freq_idxs = 8*(xid-1) + [1:8];
                     tmp = ULA_complex(t_idxs, f_idxs, freq_idxs);
@@ -357,8 +391,9 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
                 case 8
 %                     f_idxs = (fid - 1)*8+1:fid*8;
 %                     t_idxs = mod(mcnt*20 + 1:(mcnt+1)*20, CEN_N);
-                    f_idxs = (fid - 1)*8+1:fid*8;
-                    t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, CEN_N);
+                    f_idxs = (fid - 1)*Nin_per_f+1:fid*Nin_per_f;
+%                     t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, CEN_N);
+                    t_idxs = mod(mcnt*Ntime_per_packet + 1:(mcnt+1)*Ntime_per_packet, CEN_N);
                     t_idxs(t_idxs == 0) = CEN_N;
                     for bin_idx = 1:Nbin_per_x
                         data(:, 1, bin_idx, :) = CEN_real(f_idxs,t_idxs);
@@ -367,12 +402,15 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
                     end
                 case 9 % Send pulsar data
 %                     t_idxs = mod(mcnt*20 + 1:(mcnt+1)*20, Ntime);
-                    t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, Ntime);
+%                     t_idxs = mod(mcnt*85 + 1:(mcnt+1)*85, Ntime);
+                    t_idxs = mod(mcnt*Ntime_per_packet + 1:(mcnt+1)*Ntime_per_packet, Ntime);
                     t_idxs(t_idxs == 0) = Ntime;
-                    f_idxs = (fid - 1)*8+1:fid*8;
+                    f_idxs = (fid - 1)*Nin_per_f+1:fid*Nin_per_f;
 %                     freq_idxs = 5*(xid-1) + [1:5, 101:105, 201:205, 301:305, 401:405];
                     freq_idxs = 8*(xid-1) + [1:8];
                     tmp = pulseData(f_idxs, freq_idxs, t_idxs);
+%                     data(1:end-2,1,:,:) = real(tmp);
+%                     data(1:end-2,2,:,:) = imag(tmp);
                     data(:,1,:,:) = real(tmp);
                     data(:,2,:,:) = imag(tmp);
                     data(data < 0) = 2^8 + data(data < 0);
@@ -397,13 +435,19 @@ for mcnt = [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,8
                     payload(w_idx) = chan(5,2); w_idx = w_idx + 1;
                     payload(w_idx) = chan(6,1); w_idx = w_idx + 1;
                     payload(w_idx) = chan(6,2); w_idx = w_idx + 1;
-                    payload(w_idx) = chan(7,1); w_idx = w_idx + 1;
-                    payload(w_idx) = chan(7,2); w_idx = w_idx + 1;
-                    payload(w_idx) = chan(8,1); w_idx = w_idx + 1;
-                    payload(w_idx) = chan(8,2); w_idx = w_idx + 1;
+                    
+                    % For N_inputs = 24 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                     payload(w_idx) = chan(7,1); w_idx = w_idx + 1;
+%                     payload(w_idx) = chan(7,2); w_idx = w_idx + 1;
+%                     payload(w_idx) = chan(8,1); w_idx = w_idx + 1;
+%                     payload(w_idx) = chan(8,2); w_idx = w_idx + 1;
                 end
             end
-            
+%             
+%             for ii = 9:length(payload)
+%                 payload(ii) = mod(ii,255);
+%             end
+%             
             % Send data over socket
             fopen(sock(xid));
             fwrite(sock(xid), payload);

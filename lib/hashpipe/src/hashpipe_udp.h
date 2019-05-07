@@ -36,6 +36,7 @@ int hashpipe_udp_init(struct hashpipe_udp_params *p);
 int hashpipe_udp_close(struct hashpipe_udp_params *p);
 
 //#define HASHPIPE_MAX_PACKET_SIZE 9600
+//#define HASHPIPE_MAX_PACKET_SIZE 9600 // Packet size increased to 8168 bytes (8 are the packet header so payload is 8160)
 #define HASHPIPE_MAX_PACKET_SIZE 12000 // Packet size increased to 10888 bytes (8 are the packet header so payload is 10880)
 
 /* Basic UDP packet holder. */

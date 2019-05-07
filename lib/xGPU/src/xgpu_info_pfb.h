@@ -9,7 +9,8 @@
 #endif
 
 #ifndef NSTATION
-#define NSTATION 32
+//#define NSTATION 32
+#define NSTATION 12 //16 //96
 #endif
 
 // 50 point fft x 5 coarse channels

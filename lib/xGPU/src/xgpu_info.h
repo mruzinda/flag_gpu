@@ -9,7 +9,8 @@
 #endif
 
 #ifndef NSTATION
-#define NSTATION 32
+//#define NSTATION 32
+#define NSTATION 16 //96
 #endif
 
 #ifndef NFREQUENCY

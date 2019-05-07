@@ -111,6 +111,7 @@ echo "Navigating to $ONR_DIR/src"
 cd $ONR_DIR/src
 autoreconf -is
 ./configure --prefix=$prefix --with-hashpipe=$prefix --with-xgpu=$prefix --with-xgpufrb=$prefix --with-xgpupfb=$prefix --with-flagpfb=$prefix --with-flagbeamformer=$prefix --with-flagpower=$prefix
+#./configure --prefix=$prefix --with-hashpipe=$prefix --with-xgpu=$prefix --with-flagbeamformer=$prefix 
 make clean
 make
 make install

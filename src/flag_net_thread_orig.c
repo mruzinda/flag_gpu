@@ -397,12 +397,9 @@ static inline int64_t process_packet(flag_input_databuf_t * db, struct hashpipe_
         }
     }
 
-    //uint64_t * dest_p  = db->block[dest_block_idx].data + flag_input_databuf_idx(binfo.m, binfo.f, 0, 0);
-    //const uint64_t * payload_p = (uint64_t *)(p->data+8); // Ignore header
+    uint64_t * dest_p  = db->block[dest_block_idx].data + flag_input_databuf_idx(binfo.m, binfo.f, 0, 0);
+    const uint64_t * payload_p = (uint64_t *)(p->data+8); // Ignore header
 
-    uint8_t * dest_p  = db->block[dest_block_idx].data + flag_input_e_databuf_idx(binfo.m, binfo.f, 0, 0, 0);
-    //printf("Binfo.m: %d, binfo.f: %d\n",binfo.m,binfo.f);
-    const uint8_t * payload_p = (uint8_t *)(p->data+8); // Ignore header
     // Copy data into buffer
     memcpy(dest_p, payload_p, N_BYTES_PER_PACKET-8); // Ignore header
 
