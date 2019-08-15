@@ -365,7 +365,7 @@ static inline int64_t process_packet(flag_input_databuf_t * db, struct hashpipe_
         hashpipe_status_unlock_safe(st_p);
         */
         
-        // printf("Net: Late packet... mcnt = %lld\n", (long long int)pkt_mcnt);
+        //printf("Net: Late packet... mcnt = %lld\n", (long long int)pkt_mcnt);
         return -1;
     
     }

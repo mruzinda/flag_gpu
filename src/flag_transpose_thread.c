@@ -139,15 +139,15 @@ static void * run(hashpipe_thread_args_t * args) {
                                 //out_p = block_out_p + flag_gpu_input_databuf_idx(m,f,t,c);
                                 //memcpy(out_p, in_p, 128/8);
                                 // 8 bit copies ////////////////////////////////////////
+                                // Changed because the correlator requires 32 inputs so the macros are zero padded by 2 per FID. 4 FIDs with 8 inputs, 2 of which are zeros.
 					out_p = block_out_p + flag_gpu_input_e_databuf_idx(m,f,t,c,e);
                                 	if(e < 6){
-                                	in_p  = block_in_p + flag_input_e_databuf_idx(m,f,t,c,e);
-					memcpy(out_p, in_p, 2);
+                                		in_p  = block_in_p + flag_input_e_databuf_idx(m,f,t,c,e);
+						memcpy(out_p, in_p, 2);
                                 	}
 					//out_p = block_out_p + onr_gpu_input_databuf_idx(m,f,t,c,e);
 					
 				////////////////////////////////////////////////////////
-                                	//db_out->block[curblock_out].data[flag_gpu_input_e_databuf_idx(m,f,t,c,e)] = db_in->block[curblock_in].data[flag_input_e_databuf_idx(m,f,t,c,e)];
                             	}
                             }
                         }

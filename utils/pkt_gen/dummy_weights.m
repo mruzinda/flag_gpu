@@ -14,7 +14,47 @@ N_pol = 2;
 %     w_padded(Y_idx,:,2,:) = wY;
 
 w_padded = ones(N_ele, N_bin_total, N_beam, N_pol);
+% w_padded = zeros(N_ele, N_bin_total, N_beam, N_pol);
 
+% for ii = 1:N_beam/2
+%     w_padded(:,:,ii,:) = ones(N_ele, N_bin_total, ii, N_pol)*exp(1j*pi/4);
+% end
+
+% %DM 
+% w= [ 0.1055 - 0.2100i 
+%     -0.2275 + 0.0106i 
+%     0.1157 + 0.2150i 
+%     0.1510 - 0.1829i 
+%     -0.2229 - 0.0421i 
+%     0.0661 + 0.2337i 
+%     0.1893 - 0.1463i 
+%     -0.2065 - 0.0925i 
+%     0.0136 + 0.2408i 
+%     0.2185 - 0.1021i 
+%     -0.1793 - 0.1380i 
+%     -0.0391 + 0.2360i 
+%     0.2371 - 0.0525i 
+%     -0.1427 - 0.1763i 
+%     -0.0895 + 0.2196i 
+%     0.2441 + 0.0000i 
+%     -0.0985 - 0.2054i 
+%     -0.1350 + 0.1924i];
+% for ii = 1:N_bin_total
+%     for jj = 1:N_beam
+%         for kk = 1:N_pol
+%             if jj == 1
+%                 w_padded(1:18,ii,jj,kk) = ones(18,1);
+%             elseif jj == 2
+%                 w_padded(1:18,ii,jj,kk) = zeros(18,1);
+%             else
+%                 w_padded(1:18,ii,jj,kk) = w;
+%             end
+%         end
+%     end
+% end
+
+
+            
 % Save data into weight file formatted for RTBF code
 banks = {'A', 'B', 'C', 'D',...
     'E', 'F', 'G', 'H',...

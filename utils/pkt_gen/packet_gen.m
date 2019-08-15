@@ -38,9 +38,8 @@ sigma2 = kb*Tsys*BW;    % Noise power per channel
 % 7 -> Send ULA data
 % 8 -> Send exponentially correlated noise.
 % 9 -> Send pulsar data
-% 10 -> Send
 % else -> Send all zeros
-data_flag = 9;
+data_flag = 5;
 % Sinusoid parameters (only used if data_flag = 2)
 % It should be noted that the phase of the sinusoid will not change between
 % time samples-- this is just for convenience. A more sophisticated packet
@@ -210,32 +209,26 @@ for cyc = [0] % [0, -1000, 1000]
     end
 end
 
-keyboard;
+%keyboard;
 
 tic;
 % Create UDP sockets - 1 IP address per Xengine (xid)
 for xid = 1:Nxengines
 
-%     remoteHost = ['10.10.1.', num2str(xid)];
+%     remoteHost = ['10.17.16.', num2str(xid+3)];
 
     if xid == 1
         remoteHost = '10.17.16.4'; % It was 208 before
     end
 %     if xid == 2
-%         remoteHost = '10.17.16.2'; % It was 208 before
+%         remoteHost = '10.17.16.7'; % It was 208 before
 %     end
 %     if xid == 3
-%         remoteHost = '10.17.16.3'; % It was 208 before
+%         remoteHost = '10.17.16.6'; % It was 208 before
 %     end
 %     if xid == 4
-%         remoteHost = '10.17.16.4'; % It was 208 before
+%         remoteHost = '10.17.16.7'; % It was 208 before
 %     end
-%     if xid == 12
-%         remoteHost = '10.17.16.211'; % It was 208 before
-%     end
-    %if xid == 14
-    %    remoteHost = '10.10.1.1';
-    %end
     sock(xid) = udp(remoteHost, 'RemotePort', 60000, 'LocalPort', 60001);
     set(sock(xid), 'OutputBufferSize', 11000); % Packet size = 10888 bytes so Output buffer size needs to be >= 10888
     set(sock(xid), 'OutputDatagramPacketSize', 11000);
@@ -246,7 +239,7 @@ end
 mcnt = 0; % Each mcnt represents 20 packets across all F-engines in the
           % same time frame
   
-for mcnt = [0:301,400,500,600,700] % [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,800,1000,1200]  % No scalloping fix %while mcnt <= 10000
+for mcnt = [1000:1100, 0:500]%[0:301,400,500,600,700:1000] % [0:801,900,1000,1200,1300] % [0:801,1200,1600,2000,2400] [0:401,600,800,1000,1200]  % No scalloping fix %while mcnt <= 10000
     disp(['Sending mcnt = ', num2str(mcnt)]);
     for xid = [1:1] % Set to a single X-engine for single HPC testing (Richard B.)
         for fid = 1:Nfengines

@@ -493,12 +493,12 @@ int main(int argc, char *argv[])
         sleep(1);
     }
     // MCB: To have each thread terminate itself should wait to have the thread clean themselves up before killing them.
-    // for(i=num_threads-1; i>=0; i--) {
-    //   pthread_cancel(threads[i]);
-    // }
-    // for(i=num_threads-1; i>=0; i--) {
-    //   pthread_kill(threads[i], SIGINT);
-    // }
+    for(i=num_threads-1; i>=0; i--) {
+      pthread_cancel(threads[i]);
+    }
+    for(i=num_threads-1; i>=0; i--) {
+      pthread_kill(threads[i], SIGINT);
+    }
     for(i=num_threads-1; i>=0; i--) {
       pthread_join(threads[i], NULL);
       printf("HASH: Joined thread '%s'\n", args[i].thread_desc->name);

@@ -57,10 +57,11 @@ cmd_t check_cmd(int fifo_fd)
 	struct pollfd pfd[1];
         //pfd[1].fd = fifo_fd;
         //pfd[1].events = POLLIN;
-        pfd[0].fd = fifo_fd;
-        pfd[0].events = POLLIN;
-        //pfd[0].fd = fileno(stdin);
+        
+	//pfd[0].fd = fifo_fd;
         //pfd[0].events = POLLIN;
+        pfd[0].fd = fileno(stdin);
+        pfd[0].events = POLLIN;
 		// ?, num file desc, timeout
         int rv = poll(pfd, 1, 0);
         if (rv==0)

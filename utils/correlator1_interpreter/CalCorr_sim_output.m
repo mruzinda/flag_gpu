@@ -85,6 +85,7 @@ for k = 1:length(mcnt)
         subplot(2,4,fig_mod_plot);
 %         imagesc(abs(Rtot(1:Nele, 1:Nele, Nb)));
 %        imagesc(abs(Rtot(1:Nele_tot, 1:Nele_tot, Nb)));
+        % Only plotting 18 inputs of the SNAP excluding 6 inputs with zeros
         imagesc(abs(Rtot([1:6,9:14,17:22], [1:6,9:14,17:22], Nb)));
         title(['Bin ', num2str(Nb)]);
         drawnow;

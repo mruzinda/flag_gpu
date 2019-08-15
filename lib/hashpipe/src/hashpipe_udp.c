@@ -29,6 +29,12 @@ int hashpipe_udp_init(struct hashpipe_udp_params *p) {
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_protocol = 0;
     int rv = getaddrinfo(p->bindhost, NULL, &hints, &result);
+
+    // DEBUGGING multiple instances
+    //printf("hints.ai_family = %d\n result.ai_family = %d\n", hints.ai_family, &result.ai_family);
+    //printf("hints.ai_socktype = %d\n result.ai_socktype = %d\n", hints.ai_socktype, &result.ai_socktype);
+    //printf("hints.ai_protocol = %d\n result.ai_protocol = %d\n", hints.ai_protocol, &result.ai_protocol);
+
     if (rv!=0) { 
         hashpipe_error("hashpipe_udp_init", "getaddrinfo failed");
         freeaddrinfo(result);

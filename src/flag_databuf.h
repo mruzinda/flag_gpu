@@ -20,12 +20,6 @@
 #if N_INPUTS!=(2*XGPU_NSTATION)
     #warning "N_INPUTS must match inputs needed by xGPU"
 #endif
-#if N_INPUTS!=BN_ELE_BLOC
-    #warning "N_INPUTS must match BN_ELE_BLOC from cublas_beamformer.h"
-#endif
-#if N_INPUTS!=NA
-    #warning "N_INPUTS must match NA from total_power.h"
-#endif
 // xGPU needs a multiple of 32 inputs. The real number is...
 #define N_REAL_INPUTS 18 // Should be 18, but needs to be divisible by 8 //40
 
@@ -33,19 +27,10 @@
 // Number of antennas per F engine
 // Determined by F engine DDL cards
 #define N_INPUTS_PER_FENGINE 6 //8 //6 //8
-#if N_INPUTS_PER_FENGINE!=NI
-    #warning "N_INPUTS_PER_FENGINE must match NI from total_power.h"
-#endif
 
 // Number of F engines
 #define N_FENGINES 4 //(N_INPUTS/N_INPUTS_PER_FENGINE)
-//#define N_FENGINES (N_REAL_INPUTS/N_INPUTS_PER_FENGINE)
-//#define N_FENGINES 8
-#if N_FENGINES!=NF
-    #warning "N_FENGINES must match NF from total_power.h"
-#endif
 #define N_REAL_FENGINES (N_REAL_INPUTS/N_INPUTS_PER_FENGINE)
-//#define N_REAL_FENGINES (N_REAL_INPUTS/(N_INPUTS_PER_FENGINE-2))
 
 // Number of X engines
 #define N_XENGINES 12 //20
@@ -66,53 +51,31 @@
 // Determined by F engine packetizer
 #define N_BITS_IQ 8
 
-// Number of channels in system
-#define N_CHAN_TOTAL 256 //512
-
-// Number of throwaway channels
-// Changed variable for scalloping fix /////////////////////////////////
-#define N_CHAN_THROWAWAY 160 // 12
-//#define N_CHAN_THROWAWAY 112
-////////////////////////////////////////////////////////////////////////
-
 // Total number of processed channels
-#define N_CHAN (N_CHAN_TOTAL - N_CHAN_THROWAWAY)
+#define N_CHAN 96 // Total number of FPGA input channels - channels thrown away after FFT = 256-160 = 96
 
 // Number of channels per packet
 #define N_CHAN_PER_PACKET (N_CHAN/N_XENGINES)
 
 // Number of channels processed per XGPU instance?
-// Changed variable for scalloping fix /////////////////////////////////
 #define N_CHAN_PER_X 8 //25
-//#define N_CHAN_PER_X 20
-///////////////////////////////////////////////////////////////////////
 #if N_CHAN_PER_X!=XGPU_NFREQUENCY
     #warning "N_CHAN_PER_X must match frequency channels needed by xGPU"
 #endif
 #if N_CHAN_PER_X != BN_BIN
     #warning "N_CHAN_PER_X must match BN_BIN from cublas_beamformer.h"
 #endif
-#if N_CHAN_PER_X!=NC
-    #warning "N_CHAN_PER_X must match NC from total_power.h"
-#endif
 
 // Number of time samples processed per XGPU instance
-// Changed variable for scalloping fix /////////////////////////////////
 #define N_TIME_PER_BLOCK 4250 // 85 time samples per packet x 50 mcnts //4000
-//#define N_TIME_PER_BLOCK 8000
-////////////////////////////////////////////////////////////////////////
 #if N_TIME_PER_BLOCK!=XGPU_NTIME
     #warning "N_TIME_PER_BLOCK must match the time samples needed by xGPU"
 #endif
 #if N_TIME_PER_BLOCK!=BN_TIME
     #warning "N_TIME_PER_BLOCK must match BN_TIME from cublas_beamformer.h"
 #endif
-#if (N_TIME_PER_BLOCK/N_TIME_PER_PACKET)!=NM
-    #warning "Nm must match NM from total_power.h"
-#endif
 
 // Number of bytes per packet (The + 8 offset is for the 8 byte header)
-//#define N_BYTES_PER_PACKET ((N_BITS_IQ * 2)*(N_INPUTS_PER_FENGINE-2)*N_CHAN_PER_PACKET/8*N_TIME_PER_PACKET + 8)
 #define N_BYTES_PER_PACKET ((N_BITS_IQ * 2)*(N_INPUTS_PER_FENGINE)*N_CHAN_PER_PACKET/8*N_TIME_PER_PACKET + 8)
 
 // Number of bytes in packet payload
@@ -132,23 +95,14 @@
 #define Nf (N_FENGINES) // Number of fengines
 #define Nt (N_TIME_PER_PACKET) // Number of time samples per packet
 #define Nc (N_CHAN_PER_PACKET) // Number of channels per packet
-#define Ne 8 //DM (N_INPUTS_PER_FENGINE) // Number of antennas per SNAP board
+#define Ne 8 // Number of antennas per SNAP board + 2 to accomodate xGPU
 
-//#define flag_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(c+Nc*(t+Nt*(f+Nf*m))))
 //#define flag_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(c+Nc*(t+Nt*(f+Nf*m))))
-//#define flag_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/6)*(c+Nc*(t+Nt*(f+Nf*m))))
 #define flag_input_e_databuf_idx(m,f,t,c,e) (2*(e + (Ne-2)*(c+Nc*(t+Nt*(f+Nf*m)))))
-//#define flag_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(c+Nc*(t+Nt*(f+Nf*m))))
 
 // Macro to compute data word offset for transposed matrix
-//#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(c+Nc*(f+Nf*(t+Nt*m))))
 //#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(f+Nf*(c+Nc*(t+Nt*m))))
-//#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/6)*(f+Nf*(c+Nc*(t+Nt*m))))
 #define flag_gpu_input_e_databuf_idx(m,f,t,c,e) (2*(e+(Ne)*(f+Nf*(c+Nc*(t+Nt*m)))))
-//#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+Nc*(t+Nt*m))))
-//#define flag_gpu_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(f+Nf*(c+Nc*(t+Nt*m))))
-
-//DM #define onr_gpu_input_databuf_idx(m,f,t,c,e) 
 
 // Number of entries in output correlation matrix
 // #define N_COR_MATRIX (N_INPUTS*(N_INPUTS + 1)/2*N_CHAN_PER_X)
@@ -156,6 +110,7 @@
 #define N_BEAM_SAMPS (2*BN_OUTPUTS)
 #define N_POWER_SAMPS NA
 
+// FRB and PFB unecessary for ONR, but kept for now //////////////////////////////////////////////////
 // Macros specific to the rapid-dump correlator (FRB correlator)
 #define N_TIME_PER_FRB_BLOCK XGPU_FRB_NTIME
 #define N_CHAN_PER_FRB_BLOCK XGPU_FRB_NFREQUENCY
@@ -166,9 +121,7 @@
 #define N_FRB_COR_MATRIX (N_INPUTS/2*(N_INPUTS/2 + 1)/2*N_CHAN_PER_FRB_BLOCK*4)
 
 // Macro to comput data word offset for tranposed matrix in FRB mode
-//#define flag_frb_gpu_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m))))
 //#define flag_frb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m))))
-//#define flag_frb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m)))/sizeof(uint64_t))
 #define flag_frb_gpu_input_e_databuf_idx(m,f,t,c,e) ((2/sizeof(uint8_t))*(e+Ne*(f+Nf*(c+N_CHAN_PER_FRB_BLOCK*(t+Nt*m)))))
 
 // Macros specific to the fine-channel correlator (PFB correlator)
@@ -178,12 +131,10 @@
 #define N_PFB_COR_MATRIX (N_INPUTS/2*(N_INPUTS/2 + 1)/2*N_CHAN_PER_PFB_BLOCK*4)
 #define N_BYTES_PER_PFB_BLOCK (N_TIME_PER_BLOCK * N_CHAN_PER_PFB_BLOCK * N_INPUTS * N_BITS_IQ * 2 / 8)
 //#define N_BYTES_PER_PFB_BLOCK ((unsigned int)(N_TIME_PER_BLOCK * N_CHAN_PER_PFB_BLOCK * N_INPUTS * N_BITS_IQ * 2 / 8)) // The (unsigned int) cast converts the 'data' type initialized below, and lets the compiler know that you understand that the long value will fit into an 'unsigned int' and thus hides any warning it may throw at you ('integer overflow in expression' error)
-//#define N_BYTES_PER_PFB_BLOCK 408000000
 
-//#define flag_pfb_gpu_input_databuf_idx(m,f,t,c) ((2*(N_INPUTS_PER_FENGINE-2)/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m))))
 //#define flag_pfb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE/sizeof(uint64_t))*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m))))
-//#define flag_pfb_gpu_input_databuf_idx(m,f,t,c) ((2*N_INPUTS_PER_FENGINE)*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m)))/sizeof(uint64_t))
 #define flag_pfb_gpu_input_e_databuf_idx(m,f,t,c,e) ((2/sizeof(uint8_t))*(e+Ne*(f+Nf*(c+N_CHAN_PFB_SELECTED*(t+Nt*m)))))
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Macros to maintain cache alignment
 #define CACHE_ALIGNMENT (128)
@@ -227,22 +178,6 @@ typedef struct flag_input_databuf {
     flag_input_block_t block[N_INPUT_BLOCKS];
 } flag_input_databuf_t;
 
-// New structs for ONR ///////////////////////////////////////
-// A typedef for a block of data in the buffer
-//typedef struct flag_input_block_onr {
-//    flag_input_header_t header;
-//    flag_input_header_cache_alignment padding;
-//    uint16_t data[N_BYTES_PER_BLOCK/sizeof(uint16_t)];
-//} flag_input_block_onr_t;
-
-// The data buffer structure
-//typedef struct flag_input_databuf_onr {
-//    hashpipe_databuf_t header;
-//    hashpipe_databuf_cache_alignment padding; // Only to maintain alignment
-//    flag_input_block_onr_t block[N_INPUT_BLOCKS];
-//} flag_input_databuf_onr_t;
-//////////////////////////////////////////////////////////////
-
 /*
  * GPU INPUT BUFFER STRUCTURES
  * This buffer is where the reordered data for input to xGPU is stored.
@@ -276,22 +211,8 @@ typedef struct flag_gpu_input_databuf {
     flag_gpu_input_block_t block[N_GPU_INPUT_BLOCKS];
 } flag_gpu_input_databuf_t;
 
-// New structs for ONR ///////////////////////////////////////
-// A typedef for a block of data in the buffer
-//typedef struct flag_gpu_input_block_onr {
-//    flag_gpu_input_header_t header;
-//    flag_gpu_input_header_cache_alignment padding;
-//    uint16_t data[N_BYTES_PER_BLOCK/sizeof(uint16_t)];
-//} flag_gpu_input_block_t;
 
-// The data buffer structure
-//typedef struct flag_gpu_input_databuf_onr {
-//    hashpipe_databuf_t header;
-//    hashpipe_databuf_cache_alignment padding;
-//    flag_gpu_input_block_onr_t block[N_GPU_INPUT_BLOCKS];
-//} flag_gpu_input_databuf_onr_t;
-//////////////////////////////////////////////////////////////
-
+// FRB and PFB unecessary for ONR, but kept for now //////////////////////////////////////////////////
 /*
  * FRB GPU INPUT BUFFER STRUCTURES
  */
@@ -330,6 +251,7 @@ typedef struct flag_pfb_gpu_input_databuf {
     hashpipe_databuf_cache_alignment padding;
     flag_pfb_gpu_input_block_t block[N_GPU_INPUT_BLOCKS];
 } flag_pfb_gpu_input_databuf_t;
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
  * GPU OUTPUT BUFFER STRUCTURES
@@ -371,6 +293,7 @@ typedef struct flag_gpu_correlator_output_databuf {
     flag_gpu_correlator_output_block_t block[N_GPU_OUT_BLOCKS];
 } flag_gpu_correlator_output_databuf_t;
 
+// FRB and PFB unecessary for ONR, but kept for now //////////////////////////////////////////////////
 // flag_frb_gpu_correlator_output_block
 typedef struct flag_frb_gpu_correlator_output_block {
     flag_gpu_output_header_t header;
@@ -398,6 +321,7 @@ typedef struct flag_pfb_gpu_correlator_output_databuf {
     hashpipe_databuf_cache_alignment padding;
     flag_pfb_gpu_correlator_output_block_t block[N_GPU_OUT_BLOCKS];
 } flag_pfb_gpu_correlator_output_databuf_t;
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // flag_gpu_beamformer_output_block
 typedef struct flag_gpu_beamformer_output_block {
@@ -413,6 +337,7 @@ typedef struct flag_gpu_beamformer_output_databuf {
     flag_gpu_beamformer_output_block_t block[N_GPU_OUT_BLOCKS];
 } flag_gpu_beamformer_output_databuf_t;
 
+// PFB and total power unecessary for ONR, but kept for now ///////////////////////////////////////////
 //flag_gpu_pfb_output_block
 typedef struct flag_gpu_pfb_output_block {
     flag_gpu_output_header_t header;
@@ -440,6 +365,7 @@ typedef struct flag_gpu_power_output_databuf {
     hashpipe_databuf_cache_alignment padding;
     flag_gpu_power_output_block_t block[N_GPU_OUT_BLOCKS];
 } flag_gpu_power_output_databuf_t;
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /*********************
@@ -461,6 +387,7 @@ int flag_gpu_input_databuf_wait_filled (flag_gpu_input_databuf_t * d, int block_
 int flag_gpu_input_databuf_set_free    (flag_gpu_input_databuf_t * d, int block_id);
 int flag_gpu_input_databuf_set_filled  (flag_gpu_input_databuf_t * d, int block_id);
 
+// FRB and PFB unecessary for ONR, but kept for now ///////////////////////////////////////////////////
 hashpipe_databuf_t * flag_frb_gpu_input_databuf_create(int instance_id, int databuf_id);
 int flag_frb_gpu_input_databuf_wait_free   (flag_frb_gpu_input_databuf_t * d, int block_id);
 int flag_frb_gpu_input_databuf_wait_filled (flag_frb_gpu_input_databuf_t * d, int block_id);
@@ -473,6 +400,7 @@ int flag_pfb_gpu_input_databuf_wait_filled (flag_pfb_gpu_input_databuf_t * d, in
 int flag_pfb_gpu_input_databuf_set_free    (flag_pfb_gpu_input_databuf_t * d, int block_id);
 int flag_pfb_gpu_input_databuf_set_filled  (flag_pfb_gpu_input_databuf_t * d, int block_id);
 void flag_pfb_gpu_input_databuf_clear(flag_pfb_gpu_input_databuf_t * d);
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void flag_databuf_clear(hashpipe_databuf_t * d);
 
@@ -486,6 +414,7 @@ int flag_gpu_correlator_output_databuf_wait_filled (flag_gpu_correlator_output_d
 int flag_gpu_correlator_output_databuf_set_free    (flag_gpu_correlator_output_databuf_t * d, int block_id);
 int flag_gpu_correlator_output_databuf_set_filled  (flag_gpu_correlator_output_databuf_t * d, int block_id);
 
+// FRB and PFB unecessary for ONR, but kept for now ///////////////////////////////////////////////////
 hashpipe_databuf_t * flag_frb_gpu_correlator_output_databuf_create(int instance_id, int databuf_id);
 
 int flag_frb_gpu_correlator_output_databuf_wait_free   (flag_frb_gpu_correlator_output_databuf_t * d, int block_id);
@@ -499,6 +428,7 @@ int flag_pfb_gpu_correlator_output_databuf_wait_free   (flag_pfb_gpu_correlator_
 int flag_pfb_gpu_correlator_output_databuf_wait_filled (flag_pfb_gpu_correlator_output_databuf_t * d, int block_id);
 int flag_pfb_gpu_correlator_output_databuf_set_free    (flag_pfb_gpu_correlator_output_databuf_t * d, int block_id);
 int flag_pfb_gpu_correlator_output_databuf_set_filled  (flag_pfb_gpu_correlator_output_databuf_t * d, int block_id);
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 hashpipe_databuf_t * flag_gpu_beamformer_output_databuf_create(int instance_id, int databuf_id);
 
@@ -507,6 +437,7 @@ int flag_gpu_beamformer_output_databuf_wait_filled (flag_gpu_beamformer_output_d
 int flag_gpu_beamformer_output_databuf_set_free    (flag_gpu_beamformer_output_databuf_t * d, int block_id);
 int flag_gpu_beamformer_output_databuf_set_filled  (flag_gpu_beamformer_output_databuf_t * d, int block_id);
 
+// PFB and total power unecessary for ONR, but kept for now ///////////////////////////////////////////
 hashpipe_databuf_t * flag_gpu_pfb_output_databuf_create(int instance_id, int databuf_id);
 
 int flag_gpu_pfb_output_databuf_wait_free   (flag_gpu_pfb_output_databuf_t * d, int block_id);
@@ -521,6 +452,7 @@ int flag_gpu_power_output_databuf_wait_free   (flag_gpu_power_output_databuf_t *
 int flag_gpu_power_output_databuf_wait_filled (flag_gpu_power_output_databuf_t * d, int block_id);
 int flag_gpu_power_output_databuf_set_free    (flag_gpu_power_output_databuf_t * d, int block_id);
 int flag_gpu_power_output_databuf_set_filled  (flag_gpu_power_output_databuf_t * d, int block_id);
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // overloaded helper methods
 int flag_pfb_gpu_correlator_output_databuf_total_status (flag_pfb_gpu_correlator_output_databuf_t * d);
