@@ -24,7 +24,7 @@ def remote_and_run():
 
     for i in range(0,num_hpcs):
         for x in range(0,num_instances):
-            cmd = "ssh %s@%s 'source %s && source %s && python %s/start_mode.py %s %s'"
+            cmd = "ssh %s@%s 'source %s && source %s && python %s/start_mode_socket.py %s %s'"
             cmd = cmd % (user,hpc_host[i],bash_prof,db_bash,py_dir,mode_name,bank_list[x+num_instances*i])
             print cmd
             proc[x+num_instances*i] = subprocess.Popen(cmd, shell=True)
