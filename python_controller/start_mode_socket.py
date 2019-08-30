@@ -3,6 +3,7 @@ import os
 import signal
 import socket
 import sys
+import time
 
 # Class to write log files of the standard output of each hashpipe instance.
 class LogFile:
@@ -48,7 +49,7 @@ def start_instances():
     UDP_PORT1 = 60001
     datadir = "/home/tmp_output"
     weightdir = "/home/weight_files"
-    weightfile = "dummy_A.bin"
+    weightfile = "dummy_w_A.bin"
     log_Dir = "/home/logFiles/"
 
     # Determine which algorithm needs to be run:
@@ -85,17 +86,20 @@ def start_instances():
         fh = proc.stdin.fileno()
 
     # Socket initializations
-    port_idx = bank_list.index(bank) # finds the index of the specified bank
+    port_idx = bank_list.index(bank) # Finds the index of the specified bank
     UDP_IP = "10.17.16." + last_byte[port_idx]
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
     sock.bind((UDP_IP,UDP_PORT1))
-    
+  
+    #time.sleep(10) # Wait while hashpipe is starting up 
+    #print "%s: Send command (set parameters or START, STOP or QUIT) when ready." % (bank_list[x]) 
     # When the command is received from command_instances.py, write it to stdin of the instance
     while True:
         cmd_proc, addr = sock.recvfrom(1024)
         print cmd_proc
         os.write(fh, cmd_proc+'\n')
+        time.sleep(5)
         if cmd_proc == 'QUIT':
             print cmd_proc
             break
