@@ -88,6 +88,13 @@
 
 // Number of packets per block
 #define N_PACKETS_PER_BLOCK (N_BYTES_PER_BLOCK / N_BYTES_PER_PAYLOAD)
+
+// Paper parameters //////////////////////////////////////////////////////
+#define N_SUB_BLOCKS_PER_INPUT_BLOCK (N_TIME_PER_BLOCK / N_TIME_PER_PACKET)
+
+#define N_PACKETS_PER_BLOCK_PER_F    (N_PACKETS_PER_BLOCK / N_FENGINES)
+////////////////////////////////////////////////////////////////////////
+
 #define N_REAL_PACKETS_PER_BLOCK (N_REAL_BYTES_PER_BLOCK / N_BYTES_PER_PAYLOAD)
 
 // Macro to compute data word offset for complex data word
@@ -375,6 +382,8 @@ hashpipe_databuf_t * flag_input_databuf_create(int instance_id, int databuf_id);
 
 int flag_input_databuf_wait_free   (flag_input_databuf_t * d, int block_id);
 int flag_input_databuf_wait_filled (flag_input_databuf_t * d, int block_id);
+int flag_input_databuf_busywait_free   (flag_input_databuf_t * d, int block_id);
+int flag_input_databuf_busywait_filled (flag_input_databuf_t * d, int block_id);
 int flag_input_databuf_set_free    (flag_input_databuf_t * d, int block_id);
 int flag_input_databuf_set_filled  (flag_input_databuf_t * d, int block_id);
 

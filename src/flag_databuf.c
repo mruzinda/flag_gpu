@@ -17,6 +17,14 @@ int flag_input_databuf_wait_filled(flag_input_databuf_t * d, int block_id) {
     return hashpipe_databuf_wait_filled((hashpipe_databuf_t *)d, block_id);
 }
 
+int flag_input_databuf_busywait_free(flag_input_databuf_t * d, int block_id) {
+    return hashpipe_databuf_busywait_free((hashpipe_databuf_t *)d, block_id);
+}
+
+int flag_input_databuf_busywait_filled(flag_input_databuf_t * d, int block_id) {
+    return hashpipe_databuf_busywait_filled((hashpipe_databuf_t *)d, block_id);
+}
+
 int flag_input_databuf_set_free(flag_input_databuf_t * d, int block_id) {
     return hashpipe_databuf_set_free((hashpipe_databuf_t *)d, block_id);
 }

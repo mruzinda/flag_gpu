@@ -62,12 +62,12 @@ def start_instances():
         cores_per_instance = 3
         cores_per_cpu = 12
 
-    # Additional initialisations
+    # Additional initializations
     user = os.getenv('USER')
     bank = sys.argv[2]
     print bank
 
-    x = bank_list.index(bank) # Hashpipe instance index used to determine correct IP address
+    x = bank_list.index(bank) # XID used to determine correct IP address
     bank_name = 'BANK' + bank_list[x]
     UDP_IP = "10.17.16." + last_byte[x]
     
@@ -99,9 +99,21 @@ def start_instances():
         cmd_proc, addr = sock.recvfrom(1024)
         print cmd_proc
         os.write(fh, cmd_proc+'\n')
-        time.sleep(5)
         if cmd_proc == 'QUIT':
-            print cmd_proc
+            # Get the process id and kill the hashpipe process.
+            pid = proc.pid
+            #print "PID: %d" % (pid)
+            os.kill(pid, signal.SIGINT)
+            time.sleep(1)
+            print "XID %d potentially killed" % (x)
+            # Ensure that the process is killed if it is still running.
+            poll = proc.poll() # Checks to see whether the child process is killed.
+            if poll == None: # If the process is still alive.
+                os.kill(pid, signal.SIGINT)
+                print "XID %d needed a second signal interrupt." % (x)
+            else: # Else if the process is dead.
+                print "XID %d doesn't need a second signal interrupt." % (x)
+            print "XID %d definitely killed" % (x)
             break
 
 if __name__ == "__main__":
