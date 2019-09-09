@@ -129,7 +129,7 @@ static void * run(hashpipe_thread_args_t * args) {
                         hgets(st.buf,"BWEIFILE",16,weight_file);
                         hashpipe_status_unlock_safe(&st);
 
-                        printf("RTBF: Starting the update weights proccess.\n");
+                        printf("RTBF: Starting the update weights process.\n");
                         sprintf(w_dir, "%s/%s", weightdir, weight_file);
                         printf("RTBF: Weight file name: %s\n", w_dir);
                         
@@ -171,7 +171,7 @@ static void * run(hashpipe_thread_args_t * args) {
                         hgeti4(st.buf, "XID", &act_xid);
                         hputl(st.buf,"WFLAG",0);
                         hashpipe_status_unlock_safe(&st);
-                        printf("RTBF: Finished weight update proccess.\n");
+                        printf("RTBF: Finished weight update process.\n");
                     }
                 }
                 else {

@@ -176,6 +176,7 @@ typedef struct flag_input_block {
     flag_input_header_cache_alignment padding;
     //uint64_t data[N_BYTES_PER_BLOCK/sizeof(uint64_t)];
     uint8_t data[N_BYTES_PER_BLOCK/sizeof(uint8_t)]; // Data type change to make it more dynamic
+    uint8_t data_tmp[N_BYTES_PER_BLOCK/sizeof(uint8_t)]; // Used for transpose in net thread with cal_corr
 } flag_input_block_t;
 
 // The data buffer structure

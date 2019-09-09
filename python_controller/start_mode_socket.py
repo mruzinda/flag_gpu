@@ -57,6 +57,8 @@ def start_instances():
         plugin_name = 'flag_x'
         cores_per_instance = 4
         cores_per_cpu = 16
+        #cores_per_instance = 3
+        #cores_per_cpu = 12
     else:
         plugin_name = 'flag_b'
         cores_per_instance = 3
@@ -75,6 +77,7 @@ def start_instances():
     if sys.argv[1] == 'CORR':
         core_count = (cores_per_instance*x)%cores_per_cpu
         proc_list = "hashpipe -p " + plugin_name + " -I " + str(x%4) + " -o XID=" + str(x) + " -o INSTANCE=" + str(x%4) + " -o BANKNAM=" + bank_list[x] + " -o DATADIR=" + datadir + " -o BINDHOST=" + UDP_IP + " -o BINDPORT=60000 -o GPUDEV=" + str(x%2) + " -c " + str(0+core_count) + " flag_net_thread -c " + str(1+core_count) + " flag_transpose_thread -c " + str(2+core_count) + " flag_correlator_thread -c" + str(3+core_count) + " flag_corsave_thread"
+        #proc_list = "hashpipe -p " + plugin_name + " -I " + str(x%4) + " -o XID=" + str(x) + " -o INSTANCE=" + str(x%4) + " -o BANKNAM=" + bank_list[x] + " -o DATADIR=" + datadir + " -o BINDHOST=" + UDP_IP + " -o BINDPORT=60000 -o GPUDEV=" + str(x%2) + " -c " + str(0+core_count) + " flag_net_transpose_thread -c " + str(1+core_count) + " flag_corr_transpose_thread -c " + str(2+core_count) + " flag_corsave_thread"
         print proc_list
         proc = subprocess.Popen(proc_list, shell=True, stdin=subprocess.PIPE, stdout=LogFile(logfile_name=bank_name, dir_name=log_Dir))
         fh = proc.stdin.fileno()

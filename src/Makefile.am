@@ -42,6 +42,10 @@ flag_x_threads = flag_net_thread.c \
                  flag_correlator_thread.c \
                  flag_corsave_thread.c
 
+#flag_x_threads = flag_net_transpose_thread.c \
+#                 flag_corr_transpose_thread.c \
+#                 flag_corsave_thread.c
+
 # CPU Transpose
 #flag_b_threads = flag_net_thread.c \
 #                 flag_transpose_thread.c \
